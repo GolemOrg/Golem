@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+	<Properties>
+		<Property name="log4j.skipJansi" value="false"/>
+	</Properties>
+	<Appenders>
+		<TerminalConsole name="Console">
+			<PatternLayout noConsoleNoAnsi="true" pattern="[%highlight{%style{%d{HH:mm:ss}}{yellow}}] [%style{%highlight{%level}{STYLE=Logback}}] %highlightError{%minecraftFormatting{%msg}}%n"/>
+		</TerminalConsole>
+	</Appenders>
+	<Loggers>
+		<Root level="ALL">
+			<AppenderRef ref="Console"/>
+		</Root>
+	</Loggers>
+</Configuration>

@@ -1,0 +1,8 @@
+.idea
+logs
+out
+target
+META-INF
+dependency-reduced-pom.xml
+.floo
+.flooignore

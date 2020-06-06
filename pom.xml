@@ -1,7 +1,7 @@
 <project>
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>net.gollum</groupId>
-	<artifactId>gollum</artifactId>
+	<groupId>net.golem</groupId>
+	<artifactId>golem</artifactId>
 	<version>0.0.1</version>
 	<properties>
 		<maven.compiler.source>1.8</maven.compiler.source>
@@ -37,6 +37,13 @@
 			<groupId>org.jline</groupId>
 			<artifactId>jline-terminal-jansi</artifactId>
 			<version>3.12.1</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>29.0-jre</version>
+			<scope>compile</scope>
 		</dependency>
 	</dependencies>
 	<build>
@@ -51,7 +58,7 @@
 						<manifestEntries>
 							<addClasspath>true</addClasspath>
 							<classpathPrefix>lib/</classpathPrefix>
-							<Main-Class>net.gollum.Gollum</Main-Class>
+							<Main-Class>net.golem.Gollum</Main-Class>
 						</manifestEntries>
 					</archive>
 				</configuration>

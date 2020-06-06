@@ -58,7 +58,7 @@
 						<manifestEntries>
 							<addClasspath>true</addClasspath>
 							<classpathPrefix>lib/</classpathPrefix>
-							<Main-Class>net.golem.Gollum</Main-Class>
+							<Main-Class>net.golem.Golem</Main-Class>
 						</manifestEntries>
 					</archive>
 				</configuration>

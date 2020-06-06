@@ -1,6 +1,6 @@
 package net.golem.player;
 
-import net.golem.network.NetworkInformation;
+import net.golem.network.NetworkSession;
 
 import java.util.UUID;
 
@@ -8,15 +8,15 @@ public class Player {
 
 	private String username, displayName;
 
-	private NetworkInformation networkInfo;
+	private NetworkSession session;
 
 	private UUID uuid;
 
 	private boolean connected, loggedIn = false;
 
-	public Player(String username, NetworkInformation networkInfo, UUID uuid) {
+	public Player(String username, NetworkSession session, UUID uuid) {
 		this.username = username;
-		this.networkInfo = networkInfo;
+		this.session = session;
 		this.uuid = uuid;
 	}
 
@@ -32,8 +32,8 @@ public class Player {
 		this.displayName = displayName;
 	}
 
-	public NetworkInformation getNetworkInfo() {
-		return networkInfo;
+	public NetworkSession getSession() {
+		return session;
 	}
 
 	public UUID getUUID() {

@@ -18,7 +18,11 @@ public class BlockFactory {
 		return server;
 	}
 
-	public void register(Block block) {
-
+	public void register(Block block, boolean override) {
+		if(blocks.get(block.getType()) != null && !override) {
+			getServer().getLogger().error(String.format("Attempted to override block %s", block.getType()));
+			return;
+		}
+		blocks.put(block.getType(), block);
 	}
 }

@@ -13,4 +13,9 @@ public abstract class Block extends Position {
 	public BlockType getType() {
 		return type;
 	}
+
+	@Override
+	public String toString() {
+		return "Block{" + "type=" + type + ", x=" + x + ", y=" + y + ", z=" + z + '}';
+	}
 }

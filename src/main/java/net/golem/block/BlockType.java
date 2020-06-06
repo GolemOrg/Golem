@@ -18,4 +18,9 @@ public class BlockType {
 	public int getMeta() {
 		return meta;
 	}
+
+	@Override
+	public String toString() {
+		return "BlockType{" + "id=" + id + ", meta=" + meta + '}';
+	}
 }

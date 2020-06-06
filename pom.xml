@@ -45,6 +45,10 @@
 			<version>29.0-jre</version>
 			<scope>compile</scope>
 		</dependency>
+		<dependency>
+			<groupId>io.netty</groupId>
+			<artifactId>netty-all</artifactId>
+		</dependency>
 	</dependencies>
 	<build>
 		<finalName>${project.name}</finalName>

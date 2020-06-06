@@ -9,12 +9,6 @@
         <log4j2.version>2.11.1</log4j2.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-    <repositories>
-        <repository>
-            <id>nukkitx-repo-snapshot</id>
-            <url>https://repo.nukkitx.com/snapshot/</url>
-        </repository>
-    </repositories>
     <dependencies>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
@@ -33,24 +27,6 @@
             <artifactId>lombok</artifactId>
             <version>1.18.12</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.nukkitx.network</groupId>
-            <artifactId>query</artifactId>
-            <version>1.6.18</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.nukkitx.network</groupId>
-            <artifactId>raknet</artifactId>
-            <version>1.6.18</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.nukkitx.network</groupId>
-            <artifactId>rcon</artifactId>
-            <version>1.6.18</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>net.minecrell</groupId>

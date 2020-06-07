@@ -12,5 +12,6 @@
 		<Root level="ALL">
 			<AppenderRef ref="Console"/>
 		</Root>
+		<logger name="io.netty" level="INFO"/>
 	</Loggers>
 </Configuration>

@@ -5,6 +5,8 @@ import lombok.extern.log4j.Log4j2;
 import net.golem.block.BlockFactory;
 import net.golem.command.CommandRegistry;
 import net.golem.item.ItemFactory;
+import net.golem.network.raknet.RakNetServer;
+import net.golem.network.raknet.identifier.Identifier;
 import net.golem.player.PlayerManager;
 import net.golem.terminal.ServerConsole;
 import net.golem.world.WorldManager;
@@ -16,6 +18,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Log4j2
 public class Server {
 
+	/**
+	 * TODO: Move this stuff
+	 */
+	public static final int PROTOCOL_VERSION = 390;
+	public static final String SERVER_VERSION = "1.14.60";
+
+
 	protected static int TICKS_PER_SECOND = 20;
 
 	private static final int SLEEP_TIME = 1000 / TICKS_PER_SECOND;
@@ -23,6 +32,12 @@ public class Server {
 	protected double tickCounter = 0;
 
 	protected long nextTick;
+
+	private static Server instance;
+
+	private Identifier identifier;
+
+	private ServerConfiguration configuration;
 
 	private ServerConsole console;
 
@@ -38,7 +53,12 @@ public class Server {
 
 	public Server() {
 		this.console = new ServerConsole(this);
+		instance = this;
 		this.start();
+	}
+
+	public static Server getInstance() {
+		return instance;
 	}
 
 	public boolean isRunning() {
@@ -51,6 +71,10 @@ public class Server {
 
 	public Logger getLogger() {
 		return log;
+	}
+
+	public ServerConfiguration getConfiguration() {
+		return configuration;
 	}
 
 	private ServerConsole getConsole() {
@@ -79,6 +103,7 @@ public class Server {
 
 	private void start() {
 		getLogger().info("Starting server...");
+		this.configuration = new ServerConfiguration("Golem", 100, "World", "Survival");
 		// initiate the registries & factories
 		this.commandRegistry = new CommandRegistry(this);
 		this.blockFactory = new BlockFactory(this);
@@ -86,9 +111,18 @@ public class Server {
 
 		this.playerManager = new PlayerManager(this);
 		this.worldManager = new WorldManager(this);
-
+		this.identifier = new Identifier(this);
+		try {
+			new RakNetServer(19132);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		getLogger().info("The server has started successfully!");
 		this.tickProcessor();
+	}
+
+	public Identifier getIdentifier() {
+		return identifier;
 	}
 
 	public void stop() {
@@ -98,7 +132,6 @@ public class Server {
 
 	public boolean tick() {
 		++this.tickCounter;
-		//do stuff here
 		return true;
 	}
 

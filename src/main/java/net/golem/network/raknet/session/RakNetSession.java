@@ -24,7 +24,7 @@ public class RakNetSession implements Session {
 	private long lastTimestamp = System.currentTimeMillis();
 	private int latency = -1;
 
-	protected SessionHandler handler;
+	protected SessionManager handler;
 	protected ChannelHandlerContext context;
 	private ScheduledFuture<?> task;
 
@@ -35,7 +35,7 @@ public class RakNetSession implements Session {
 
 	protected ConcurrentLinkedQueue<DataPacket> packetQueue = new ConcurrentLinkedQueue<>();
 
-	public RakNetSession(SessionHandler handler, InetSocketAddress address, ChannelHandlerContext context) {
+	public RakNetSession(SessionManager handler, InetSocketAddress address, ChannelHandlerContext context) {
 		this.handler = handler;
 		this.address = address;
 		this.context = context;
@@ -50,7 +50,7 @@ public class RakNetSession implements Session {
 		this.latency = latency;
 	}
 
-	public SessionHandler getHandler() {
+	public SessionManager getHandler() {
 		return handler;
 	}
 

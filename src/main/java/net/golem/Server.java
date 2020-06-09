@@ -12,6 +12,7 @@ import net.golem.terminal.ServerConsole;
 import net.golem.world.WorldManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 
@@ -32,6 +33,8 @@ public class Server {
 	protected double tickCounter = 0;
 
 	protected long nextTick;
+
+	private UUID guid;
 
 	private static Server instance;
 
@@ -73,6 +76,10 @@ public class Server {
 		return log;
 	}
 
+	public UUID getGlobalUniqueId() {
+		return guid;
+	}
+
 	public ServerConfiguration getConfiguration() {
 		return configuration;
 	}
@@ -103,6 +110,7 @@ public class Server {
 
 	private void start() {
 		getLogger().info("Starting server...");
+		this.guid = UUID.randomUUID();
 		this.configuration = new ServerConfiguration("Golem", 100, "World", "Survival");
 		// initiate the registries & factories
 		this.commandRegistry = new CommandRegistry(this);

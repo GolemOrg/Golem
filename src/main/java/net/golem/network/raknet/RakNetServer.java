@@ -2,18 +2,18 @@ package net.golem.network.raknet;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioDatagramChannel;
-import net.golem.network.raknet.codec.PacketDecoder;
-import net.golem.network.raknet.codec.PacketEncoder;
 import net.golem.network.raknet.handler.codec.RakNetDecodeHandler;
 import net.golem.network.raknet.handler.codec.RakNetEncodeHandler;
-import net.golem.network.raknet.handler.packet.UnconnectedPingPacketHandler;
+import net.golem.network.raknet.handler.packet.OpenConnectionReply1Handler;
+import net.golem.network.raknet.handler.packet.OpenConnectionReply2Handler;
+import net.golem.network.raknet.handler.packet.UnconnectedPingHandler;
 import net.golem.network.raknet.protocol.RakNetPacket;
 import net.golem.network.raknet.protocol.RakNetPacketFactory;
+import net.golem.network.raknet.session.SessionManager;
 
 import java.net.InetSocketAddress;
 
@@ -21,10 +21,7 @@ public class RakNetServer {
 
 	private RakNetPacketFactory packetFactory = new RakNetPacketFactory(this);
 
-	private PacketEncoder encoder = new PacketEncoder();
-	private PacketDecoder decoder = new PacketDecoder();
-
-	private Channel channel;
+	private SessionManager sessionManager;
 
 	private final int port;
 
@@ -37,21 +34,13 @@ public class RakNetServer {
 		return packetFactory;
 	}
 
-	public PacketEncoder getEncoder() {
-		return encoder;
-	}
-
-	public PacketDecoder getDecoder() {
-		return decoder;
-	}
-
 	public int getPort() {
 		return port;
 	}
 
 	public void run() throws InterruptedException {
 		NioEventLoopGroup group = new NioEventLoopGroup();
-		ChannelFuture channel = new Bootstrap()
+		new Bootstrap()
 				.group(group)
 				.option(ChannelOption.SO_REUSEADDR, true)
 				.channel(NioDatagramChannel.class)
@@ -60,8 +49,10 @@ public class RakNetServer {
 					protected void initChannel(NioDatagramChannel channel) {
 						channel.pipeline().addLast(
 								new RakNetDecodeHandler(RakNetServer.this),
-								new RakNetEncodeHandler(RakNetServer.this),
-								new UnconnectedPingPacketHandler(RakNetServer.this)
+								new UnconnectedPingHandler(RakNetServer.this),
+								new OpenConnectionReply1Handler(RakNetServer.this),
+								new OpenConnectionReply2Handler(RakNetServer.this),
+								new RakNetEncodeHandler(RakNetServer.this)
 						);
 					}
 				})
@@ -69,9 +60,10 @@ public class RakNetServer {
 				.sync()
 				.channel()
 				.closeFuture();
+		this.sessionManager = new SessionManager(this);
 	}
 
-	public void sendPacket(InetSocketAddress address, RakNetPacket packet) {
-
+	public SessionManager getSessionManager() {
+		return sessionManager;
 	}
 }

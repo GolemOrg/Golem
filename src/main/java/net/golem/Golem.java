@@ -6,9 +6,13 @@ package net.golem;
 public class Golem {
 
 	public static void main(String[] args) {
+		setProperties();
 		new Server();
 	}
 
+	public static void setProperties() {
+		System.setProperty("java.net.preferIPv4Stack", "true");
+	}
 
 	public void hack() {
 		/**

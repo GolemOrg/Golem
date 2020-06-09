@@ -16,8 +16,6 @@ public abstract class RakNetPacket implements DataPacket  {
 
 	public static final byte[] MAGIC = new byte[] { (byte) 0x00, (byte) 0xff, (byte) 0xff, (byte) 0x00, (byte) 0xfe, (byte) 0xfe, (byte) 0xfe, (byte) 0xfe, (byte) 0xfd, (byte) 0xfd, (byte) 0xfd, (byte) 0xfd, (byte) 0x12, (byte) 0x34, (byte) 0x56, (byte) 0x78 };
 
-	public static final Charset UTF8 = StandardCharsets.UTF_8;
-
 	public RakNetPacket(byte id) {
 		this.id = id;
 	}
@@ -47,7 +45,6 @@ public abstract class RakNetPacket implements DataPacket  {
 	}
 
 	public ByteBuf write(PacketEncoder encoder) {
-		encoder.getBuffer().retain();
 		encoder.writeByte(getId());
 		this.encode(encoder);
 		return encoder.getBuffer();

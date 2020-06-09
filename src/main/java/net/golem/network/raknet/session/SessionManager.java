@@ -5,13 +5,13 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import net.golem.network.raknet.RakNetAddressedEnvelope;
 import net.golem.network.raknet.RakNetServer;
 import net.golem.network.raknet.handler.RakNetInboundPacketHandler;
-import net.golem.network.raknet.protocol.connection.OpenConnectionRequestPacket1;
-import net.golem.network.raknet.protocol.connection.SessionPacket;
+import net.golem.network.raknet.protocol.RakNetPacket;
+import net.golem.network.raknet.protocol.connection.request.OpenConnectionRequest1Packet;
 
 import java.net.InetSocketAddress;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class SessionHandler extends RakNetInboundPacketHandler<SessionPacket> {
+public class SessionManager extends RakNetInboundPacketHandler<RakNetPacket> {
 
 	private NioEventLoopGroup sessionGroup = new NioEventLoopGroup();
 
@@ -19,8 +19,8 @@ public class SessionHandler extends RakNetInboundPacketHandler<SessionPacket> {
 
 	private ChannelHandlerContext context;
 
-	public SessionHandler(RakNetServer server) {
-		super(server, SessionPacket.class);
+	public SessionManager(RakNetServer server) {
+		super(server, RakNetPacket.class);
 	}
 
 	public NioEventLoopGroup getSessionGroup() {
@@ -36,6 +36,17 @@ public class SessionHandler extends RakNetInboundPacketHandler<SessionPacket> {
 	}
 
 	public Session get(InetSocketAddress address) {
+		return this.get(address, false);
+	}
+
+	public Session get(InetSocketAddress address, boolean create) {
+		if(!this.contains(address) && create) {
+			try {
+				this.create(address);
+			} catch (SessionException e) {
+				e.printStackTrace();
+			}
+		}
 		return this.contains(address) ? sessions.get(address) : null;
 	}
 
@@ -48,29 +59,14 @@ public class SessionHandler extends RakNetInboundPacketHandler<SessionPacket> {
 	}
 
 	@Override
-	protected void handlePacket(ChannelHandlerContext context, RakNetAddressedEnvelope<SessionPacket> message) {
+	protected void handlePacket(ChannelHandlerContext context, RakNetAddressedEnvelope<RakNetPacket> message) {
 		if(this.context == null) {
 			this.context = context;
 		}
-		SessionPacket packet = message.content();
+		RakNetPacket packet = message.content();
 		InetSocketAddress sender = message.sender();
 		Session session;
 
-		if(packet instanceof OpenConnectionRequestPacket1 && !this.contains(sender)) {
-			try {
-				session = this.create(message.sender());
-			} catch (SessionException e) {
-				e.printStackTrace();
-				return;
-			}
-		} else {
-			session = this.get(sender);
-		}
-
-		if(session != null) {
-			session.handle(packet);
-			return;
-		}
 	}
 
 	public void closeAll() {

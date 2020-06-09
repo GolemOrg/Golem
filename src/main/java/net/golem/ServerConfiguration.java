@@ -1,7 +1,5 @@
 package net.golem;
 
-import java.util.UUID;
-
 public class ServerConfiguration {
 
 	private String name;
@@ -9,8 +7,6 @@ public class ServerConfiguration {
 	private String defaultGamemode;
 
 	private int maxPlayerCount;
-
-	private UUID guid = UUID.randomUUID();
 
 	private String worldName;
 
@@ -31,10 +27,6 @@ public class ServerConfiguration {
 
 	public int getMaxPlayerCount() {
 		return maxPlayerCount;
-	}
-
-	public UUID getGlobalUniqueId() {
-		return guid;
 	}
 
 	public String getDefaultGamemode() {

@@ -21,17 +21,14 @@ public class UnconnectedPongPacket extends RakNetPacket {
 
 	@Override
 	public void decode(PacketDecoder decoder) {
-		pingId = decoder.readLong();
-		guid = decoder.readLong();
-		decoder.skipBytes(MAGIC.length);
-		serverName = decoder.readString();
+
 	}
 
 	@Override
 	public void encode(PacketEncoder encoder) {
 		encoder.writeLong(pingId);
 		encoder.writeLong(guid);
-		encoder.writeBytes(MAGIC);
+		encoder.writeMagic();
 		encoder.writeString(serverName);
 	}
 

@@ -6,6 +6,7 @@ import io.netty.channel.socket.DatagramPacket;
 import io.netty.handler.codec.MessageToMessageEncoder;
 import lombok.extern.log4j.Log4j2;
 import net.golem.network.raknet.RakNetServer;
+import net.golem.network.raknet.codec.PacketEncoder;
 import net.golem.network.raknet.protocol.RakNetPacket;
 
 import java.net.InetSocketAddress;
@@ -27,7 +28,8 @@ public class RakNetEncodeHandler extends MessageToMessageEncoder<AddressedEnvelo
 	@Override
 	protected void encode(ChannelHandlerContext context, AddressedEnvelope<RakNetPacket, InetSocketAddress> message, List<Object> list) {
 		RakNetPacket packet = message.content();
-		list.add(new DatagramPacket(packet.write(rakNet.getEncoder()), message.sender()));
+		PacketEncoder encoder = new PacketEncoder();
+		list.add(new DatagramPacket(packet.write(encoder), message.sender()));
 	}
 
 }

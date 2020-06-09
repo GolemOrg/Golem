@@ -25,7 +25,7 @@ public class UnconnectedPingPacket extends RakNetPacket {
 	@Override
 	public void encode(PacketEncoder encoder) {
 		encoder.writeLong(pingId);
-		encoder.writeBytes(MAGIC);
+		encoder.writeMagic();
 		encoder.writeLong(clientGuid);
 	}
 

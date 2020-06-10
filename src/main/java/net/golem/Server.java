@@ -23,7 +23,6 @@ public class Server {
 	 * TODO: Move this stuff
 	 */
 	public static final int PROTOCOL_VERSION = 390;
-	public static final String SERVER_VERSION = "1.14.60";
 
 
 	protected static int TICKS_PER_SECOND = 20;
@@ -37,6 +36,8 @@ public class Server {
 	private UUID guid;
 
 	private static Server instance;
+
+	private RakNetServer rakNet;
 
 	private Identifier identifier;
 
@@ -111,7 +112,7 @@ public class Server {
 	private void start() {
 		getLogger().info("Starting server...");
 		this.guid = UUID.randomUUID();
-		this.configuration = new ServerConfiguration("Golem", 100, "World", "Survival");
+		this.configuration = new ServerConfiguration("Golem", "1.14.60", 100, "World", "Survival", false,19132);
 		// initiate the registries & factories
 		this.commandRegistry = new CommandRegistry(this);
 		this.blockFactory = new BlockFactory(this);
@@ -121,7 +122,7 @@ public class Server {
 		this.worldManager = new WorldManager(this);
 		this.identifier = new Identifier(this);
 		try {
-			new RakNetServer(19132);
+			this.rakNet = new RakNetServer(getConfiguration().getPort());
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -170,6 +171,7 @@ public class Server {
 				exception.printStackTrace();
 			}
 		}
+		rakNet.getGroup().shutdownGracefully();
 	}
 
 }

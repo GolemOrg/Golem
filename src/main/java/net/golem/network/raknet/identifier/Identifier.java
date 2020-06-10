@@ -21,7 +21,20 @@ public class Identifier {
 		return server;
 	}
 	public ArrayList<Object> getValues() {
-		return new ArrayList<>(Arrays.asList(this.getServer().getConfiguration().getName(), Server.PROTOCOL_VERSION, Server.SERVER_VERSION, this.getServer().getPlayerManager().getOnlinePlayers().size(), this.getServer().getConfiguration().getMaxPlayerCount(), this.getServer().getGlobalUniqueId().getMostSignificantBits(), this.getServer().getConfiguration().getWorldName(), this.getServer().getConfiguration().getDefaultGamemode()));
+		return new ArrayList<>(Arrays.asList(
+				this.getServer().getConfiguration().getName(),
+				Server.PROTOCOL_VERSION,
+				this.getServer().getConfiguration().getVersion(),
+				this.getServer().getPlayerManager().getOnlinePlayers().size(),
+				this.getServer().getConfiguration().getMaxPlayerCount(),
+				this.getServer().getGlobalUniqueId().getMostSignificantBits(),
+				this.getServer().getConfiguration().getWorldName(),
+				this.getServer().getConfiguration().getDefaultGamemode(),
+				this.getServer().getConfiguration().isLimitedToSwitch() ? "0" : "1",
+				this.getServer().getConfiguration().getPort(),
+				this.getServer().getConfiguration().getPort()
+			)
+		);
 	}
 
 	public String build() {

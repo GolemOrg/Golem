@@ -2,15 +2,13 @@ package net.golem.network.raknet.session;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.socket.DatagramPacket;
-import io.netty.util.concurrent.ScheduledFuture;
 import lombok.extern.log4j.Log4j2;
 import net.golem.network.raknet.DataPacket;
 import net.golem.network.raknet.RakNetServer;
 import net.golem.network.raknet.codec.PacketEncoder;
-import net.golem.network.raknet.protocol.AcknowledgePacket;
-import net.golem.network.raknet.protocol.DisconnectionNotificationPacket;
-import net.golem.network.raknet.protocol.RakNetDatagram;
-import net.golem.network.raknet.protocol.RakNetPacket;
+import net.golem.network.raknet.protocol.*;
+import net.golem.network.raknet.protocol.connection.ConnectionRequestAcceptedPacket;
+import net.golem.network.raknet.protocol.connection.ConnectionRequestPacket;
 import net.golem.network.raknet.protocol.connection.connected.ConnectedPingPacket;
 import net.golem.network.raknet.types.PacketReliability;
 
@@ -22,7 +20,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class RakNetSession implements Session {
 
 	/**
-	 * Update ever 10ms
+	 * Update every 10ms
 	 */
 	public static final int UPDATE_PERIOD = 10;
 
@@ -34,11 +32,12 @@ public class RakNetSession implements Session {
 
 	private long lastTimestamp = System.currentTimeMillis();
 
+	private int sendSequenceNumber = 0;
+
 	private int latency = -1;
 
 	protected SessionManager handler;
 	protected ChannelHandlerContext context;
-	private ScheduledFuture<?> task;
 
 	protected InetSocketAddress address;
 
@@ -119,7 +118,7 @@ public class RakNetSession implements Session {
 	@Override
 	public void close(String reason) {
 		log.info(String.format("Closing session due to %s", reason));
-		this.sendPacket(new DisconnectionNotificationPacket());
+
 		this.getHandler().remove(this);
 	}
 
@@ -148,16 +147,36 @@ public class RakNetSession implements Session {
 		 * Don't try to update if the session is closed
 		 */
 		if(this.getState() == SessionState.CLOSED) {
-			task.cancel(true);
+
 		}
 
 	}
 
 	@Override
 	public void handle(DataPacket packet) {
-		if(packet instanceof RakNetDatagram) {
-			this.sendPacket(AcknowledgePacket.createACK());
+		if(packet instanceof ConnectionRequestPacket) {
+			ConnectionRequestAcceptedPacket pk = new ConnectionRequestAcceptedPacket();
+
+			pk.address = this.getAddress();
+			pk.sendPingTime = ((ConnectionRequestPacket) packet).sendPingTime;
+			pk.sendPongTime = (int) this.getServer().getRakNetTimeMS();
+
+			this.sendEncapsulatedPacket(pk, PacketReliability.UNRELIABLE, 0, true);
 		}
+	}
+
+	public void handleEncapsulated(RakNetDatagram packet) {
+		if(packet != null) {
+			packet.packets.stream().findFirst().ifPresent(pk -> this.handle(RakNetPacketFactory.from(pk.buffer.copy())));
+		}
+	}
+
+	public void handleACK(AcknowledgePacket packet) {
+		log.info(String.format("ACK: %s", packet));
+	}
+
+	public void handleNAK(AcknowledgePacket packet) {
+		log.info(String.format("NAK: %s", packet));
 	}
 
 	@Override
@@ -174,6 +193,22 @@ public class RakNetSession implements Session {
 	@Override
 	public void sendPacket(RakNetPacket packet, PacketReliability reliability) {
 
+	}
+
+	public void sendEncapsulatedPacket(DataPacket packet, PacketReliability reliability, int orderChannel, boolean immediate) {
+		RakNetDatagram datagram = new RakNetDatagram();
+
+		EncapsulatedPacket encapsulated = new EncapsulatedPacket();
+		encapsulated.reliability = reliability;
+		encapsulated.orderChannel = orderChannel;
+		encapsulated.buffer = packet.write(new PacketEncoder());
+		datagram.packets.add(encapsulated);
+		this.sendDatagram(datagram);
+	}
+
+	public void sendDatagram(RakNetDatagram datagram) {
+		datagram.sequenceNumber = this.sendSequenceNumber++;
+		this.getContext().writeAndFlush(new DatagramPacket(datagram.write(new PacketEncoder()), this.getAddress()));
 	}
 
 	@Override

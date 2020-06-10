@@ -21,8 +21,8 @@ public class AcknowledgePacket extends SessionPacket {
 		return new AcknowledgePacket(RakNetPacketIds.ACK);
 	}
 
-	public static AcknowledgePacket createNACK() {
-		return new AcknowledgePacket(RakNetPacketIds.NACK);
+	public static AcknowledgePacket createNAK() {
+		return new AcknowledgePacket(RakNetPacketIds.NAK);
 	}
 
 	@Override
@@ -72,6 +72,21 @@ public class AcknowledgePacket extends SessionPacket {
 			}
 		}
 		encoder.writeShort((short) recodeCnt);
-		encoder.writeBytes(buffer.array());
+		encoder.writeBytes(buffer);
+	}
+
+	public boolean isACK() {
+		return this.id == RakNetPacketIds.ACK;
+	}
+
+	public boolean isNAK() {
+		return this.id == RakNetPacketIds.NAK;
+	}
+
+	@Override
+	public String toString() {
+		return "AcknowledgePacket{" +
+				"records=" + records +
+				'}';
 	}
 }

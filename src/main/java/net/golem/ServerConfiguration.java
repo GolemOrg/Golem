@@ -4,21 +4,34 @@ public class ServerConfiguration {
 
 	private String name;
 
+	private String version;
+
 	private String defaultGamemode;
 
 	private int maxPlayerCount;
 
 	private String worldName;
 
-	public ServerConfiguration(String name, int maxPlayerCount, String worldName, String defaultGamemode) {
+	private int port;
+
+	private boolean limitedToSwitch;
+
+	public ServerConfiguration(String name, String version, int maxPlayerCount, String worldName, String defaultGamemode, boolean limitedToSwitch, int port) {
 		this.setName(name);
+		this.version = version;
 		this.setMaxPlayerCount(maxPlayerCount);
 		this.setWorldName(worldName);
 		this.setDefaultGamemode(defaultGamemode);
+		this.limitedToSwitch = limitedToSwitch;
+		this.port = port;
 	}
 
 	public String getName() {
 		return name;
+	}
+
+	public String getVersion() {
+		return version;
 	}
 
 	public void setName(String name) {
@@ -47,5 +60,13 @@ public class ServerConfiguration {
 
 	public void setWorldName(String worldName) {
 		this.worldName = worldName;
+	}
+
+	public boolean isLimitedToSwitch() {
+		return limitedToSwitch;
+	}
+
+	public int getPort() {
+		return port;
 	}
 }

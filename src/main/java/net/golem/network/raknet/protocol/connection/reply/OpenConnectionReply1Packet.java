@@ -1,4 +1,4 @@
-package net.golem.network.raknet.protocol.connection.response;
+package net.golem.network.raknet.protocol.connection.reply;
 
 import net.golem.network.raknet.codec.PacketDecoder;
 import net.golem.network.raknet.codec.PacketEncoder;
@@ -14,7 +14,7 @@ public class OpenConnectionReply1Packet extends RakNetPacket {
 	public short maximumTransferUnits;
 
 	public OpenConnectionReply1Packet() {
-		super(RakNetPacketIds.OPEN_CONNECTION_RESPONSE_1);
+		super(RakNetPacketIds.OPEN_CONNECTION_REPLY_1);
 	}
 
 	@Override

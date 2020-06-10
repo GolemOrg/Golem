@@ -23,7 +23,7 @@ public class PacketEncoder {
 	}
 
 	public void writeBoolean(boolean value) {
-		getBuffer().writeBoolean(value);
+		buffer.writeBoolean(value);
 	}
 
 	public void writeAddress(InetSocketAddress address) {
@@ -32,10 +32,10 @@ public class PacketEncoder {
 				throw new NullPointerException("Address or IP address null");
 			}
 			int type = RakNetAddressUtils.getAddressVersion(address.getAddress());
-			byte[] addressBytes = address.getAddress().getAddress();
+			ByteBuf addressBytes = Unpooled.copiedBuffer(address.getAddress().getAddress());
 			this.writeByte((byte) type);
 			if(type == RakNetAddressUtils.IPV4) {
-				for (byte addressByte : addressBytes) this.writeByte((byte) (~addressByte & 0xFF));
+				for (byte addressByte : addressBytes.array()) this.writeByte((byte) (~addressByte & 0xFF));
 				this.writeShort((short) address.getPort());
 			} else if(type == RakNetAddressUtils.IPV6) {
 				this.writeShort((short) RakNetAddressUtils.AF_INET6);
@@ -53,48 +53,48 @@ public class PacketEncoder {
 	}
 
 	public void writeShort(short value) {
-		getBuffer().writeShort(value);
+		buffer.writeShort(value);
 	}
 
 	public void writeMedium(int value) {
-		getBuffer().writeMedium(value);
+		buffer.writeMedium(value);
 	}
 
 	public void writeInt(int value) {
-		getBuffer().writeInt(value);
+		buffer.writeInt(value);
 	}
 
 	public void writeLong(long value) {
-		getBuffer().writeLong(value);
+		buffer.writeLong(value);
 	}
 
 	public void writeChar(char value) {
-		getBuffer().writeChar(value);
+		buffer.writeChar(value);
 	}
 
 	public void writeFloat(float value) {
-		getBuffer().writeFloat(value);
+		buffer.writeFloat(value);
 	}
 
 	public void writeDouble(double value) {
-		getBuffer().writeDouble(value);
+		buffer.writeDouble(value);
 	}
 
 	public void writeByte(byte value) {
-		getBuffer().writeByte(value);
+		buffer.writeByte(value);
 	}
 
-	public void writeBytes(byte[] bytes) {
-		getBuffer().writeBytes(bytes);
+	public void writeBytes(ByteBuf bytes) {
+		buffer.writeBytes(bytes);
 	}
 
 	public void writeString(String string) {
-		getBuffer().writeShort(string.length());
-		getBuffer().writeCharSequence(string, StandardCharsets.UTF_8);
+		buffer.writeShort(string.length());
+		buffer.writeCharSequence(string, StandardCharsets.UTF_8);
 	}
 
 	public void writeMagic() {
-		getBuffer().writeBytes(RakNetPacket.MAGIC);
+		buffer.writeBytes(RakNetPacket.MAGIC);
 	}
 
 	public void writeZeroes(int count) {
@@ -102,7 +102,7 @@ public class PacketEncoder {
 	}
 
 	public void clear() {
-		getBuffer().clear();
+		buffer.clear();
 	}
 
 }

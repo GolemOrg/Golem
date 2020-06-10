@@ -1,5 +1,6 @@
 package net.golem.network.raknet.protocol;
 
+import io.netty.buffer.ByteBuf;
 import lombok.extern.log4j.Log4j2;
 import net.golem.network.raknet.BitFlags;
 import net.golem.network.raknet.codec.PacketDecoder;
@@ -24,7 +25,10 @@ public class RakNetDatagram extends RakNetPacket {
 
 	@Override
 	public void encode(PacketEncoder encoder) {
-		this.encodeHeader(encoder);
+		encoder.getBuffer().writeMediumLE(sequenceNumber);
+		for(EncapsulatedPacket packet : packets) {
+			packet.encode(encoder);
+		}
 	}
 
 	public void encodeHeader(PacketEncoder encoder) {
@@ -33,18 +37,18 @@ public class RakNetDatagram extends RakNetPacket {
 
 	@Override
 	public void decode(PacketDecoder decoder) {
+		decoder.getBuffer().resetReaderIndex();
 		this.decodeHeader(decoder);
-		this.sequenceNumber = decoder.readMedium();
+		this.sequenceNumber = decoder.readUnsignedMediumLE();
 		while(decoder.isReadable()) {
 			EncapsulatedPacket packet = new EncapsulatedPacket();
-			packet.read(decoder);
+			packet.decode(decoder);
 			this.packets.add(packet);
 		}
-		log.info(this.toString());
 	}
 
 	public void decodeHeader(PacketDecoder decoder) {
-		this.headerFlags = decoder.readByte();
+		this.headerFlags = decoder.readUnsignedByte();
 	}
 
 	public int length() {
@@ -54,6 +58,13 @@ public class RakNetDatagram extends RakNetPacket {
 		}
 
 		return length;
+	}
+
+	@Override
+	public ByteBuf write(PacketEncoder encoder) {
+		this.encodeHeader(encoder);
+		this.encode(encoder);
+		return encoder.getBuffer();
 	}
 
 	@Override

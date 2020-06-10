@@ -2,9 +2,6 @@ package net.golem.network.raknet.protocol;
 
 import lombok.extern.log4j.Log4j2;
 import net.golem.network.raknet.DataPacket;
-import net.golem.network.raknet.codec.PacketDecoder;
-import net.golem.network.raknet.codec.PacketEncoder;
-
 
 @Log4j2
 public abstract class RakNetPacket extends DataPacket  {
@@ -14,20 +11,5 @@ public abstract class RakNetPacket extends DataPacket  {
 	public RakNetPacket(int id) {
 		super(id);
 	}
-
-	/**
-	 * Read from the buffer
-	 *
-	 *
-	 * @param decoder
-	 */
-	public abstract void decode(PacketDecoder decoder);
-
-	/**
-	 *
-	 *
-	 * @param encoder
-	 */
-	public abstract void encode(PacketEncoder encoder);
 
 }

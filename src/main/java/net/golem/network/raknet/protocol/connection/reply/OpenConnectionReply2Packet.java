@@ -1,4 +1,4 @@
-package net.golem.network.raknet.protocol.connection.response;
+package net.golem.network.raknet.protocol.connection.reply;
 
 import net.golem.network.raknet.codec.PacketDecoder;
 import net.golem.network.raknet.codec.PacketEncoder;
@@ -13,12 +13,12 @@ public class OpenConnectionReply2Packet extends RakNetPacket {
 
 	public InetSocketAddress clientAddress;
 
-	public short maximumTransferUnits;
+	public int maximumTransferUnits;
 
 	public boolean serverSecurity = false;
 
 	public OpenConnectionReply2Packet() {
-		super(RakNetPacketIds.OPEN_CONNECTION_RESPONSE_2);
+		super(RakNetPacketIds.OPEN_CONNECTION_REPLY_2);
 	}
 
 	@Override
@@ -26,7 +26,7 @@ public class OpenConnectionReply2Packet extends RakNetPacket {
 		decoder.readMagic();
 		serverId = decoder.readLong();
 		clientAddress = decoder.readAddress();
-		maximumTransferUnits = decoder.readShort();
+		maximumTransferUnits = decoder.readUnsignedShort();
 		serverSecurity = decoder.readBoolean();
 	}
 
@@ -35,7 +35,7 @@ public class OpenConnectionReply2Packet extends RakNetPacket {
 		encoder.writeMagic();
 		encoder.writeLong(serverId);
 		encoder.writeAddress(clientAddress);
-		encoder.writeShort(maximumTransferUnits);
+		encoder.writeShort((short) maximumTransferUnits);
 		encoder.writeBoolean(serverSecurity);
 	}
 }

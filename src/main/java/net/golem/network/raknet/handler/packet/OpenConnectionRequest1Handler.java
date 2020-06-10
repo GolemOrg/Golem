@@ -7,7 +7,7 @@ import net.golem.network.raknet.RakNetAddressedEnvelope;
 import net.golem.network.raknet.RakNetServer;
 import net.golem.network.raknet.handler.RakNetInboundPacketHandler;
 import net.golem.network.raknet.protocol.connection.request.OpenConnectionRequest1Packet;
-import net.golem.network.raknet.protocol.connection.response.OpenConnectionReply1Packet;
+import net.golem.network.raknet.protocol.connection.reply.OpenConnectionReply1Packet;
 
 
 @Log4j2

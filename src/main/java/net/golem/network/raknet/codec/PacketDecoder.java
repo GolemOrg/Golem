@@ -23,7 +23,7 @@ public class PacketDecoder {
 	}
 
 	public int length() {
-		return getBuffer().readableBytes();
+		return buffer.readableBytes();
 	}
 
 	public InetSocketAddress readAddress() {
@@ -39,7 +39,7 @@ public class PacketDecoder {
 				this.readShort(); // AF_INET6
 				port = this.readShort();
 				this.readInt(); // Flow Info
-				addressBytes = this.readBytes(RakNetAddressUtils.IPV6_ADDRESS_LENGTH);
+				addressBytes = this.readBytes(RakNetAddressUtils.IPV6_ADDRESS_LENGTH).array();
 				this.readInt(); // Scope ID
 			} else {
 				throw new Exception(String.format("Unknown address type %s", type));
@@ -52,88 +52,104 @@ public class PacketDecoder {
 	}
 
 	public boolean readBoolean() {
-		return getBuffer().readBoolean();
+		return buffer.readBoolean();
 	}
 
 	public short readShort() {
-		return getBuffer().readShort();
+		return buffer.readShort();
 	}
 
 	public int readUnsignedShort() {
-		return getBuffer().readUnsignedShort();
+		return buffer.readUnsignedShort();
+	}
+
+	public int readUnsignedShortLE() {
+		return buffer.readUnsignedShortLE();
 	}
 
 	public int readMedium() {
-		return getBuffer().readMedium();
+		return buffer.readMedium();
+	}
+
+	public int readUnsignedMedium() {
+		return buffer.readUnsignedMedium();
+	}
+
+	public int readUnsignedMediumLE() {
+		return buffer.readUnsignedMediumLE();
 	}
 
 	public int readInt() {
-		return getBuffer().readInt();
+		return buffer.readInt();
 	}
 
 	public int readUnsignedInt() {
-		return (int) getBuffer().readUnsignedInt();
+		return (int) buffer.readUnsignedInt();
 	}
 
 	public long readLong() {
-		return getBuffer().readLong();
+		return buffer.readLong();
 	}
 
 	public char readChar() {
-		return getBuffer().readChar();
+		return buffer.readChar();
 	}
 
 	public float readFloat() {
-		return getBuffer().readFloat();
+		return buffer.readFloat();
 	}
 
 	public double readDouble() {
-		return getBuffer().readDouble();
+		return buffer.readDouble();
 	}
 
 	public byte readByte() {
-		return getBuffer().readByte();
+		return buffer.readByte();
 	}
 
 	public int readUnsignedByte() {
-		return getBuffer().readUnsignedByte();
+		return buffer.readUnsignedByte();
 	}
 
-	public byte[] readBytes(int length) {
-		byte[] output = new byte[length];
-
-		//TODO: Find a better way to do this
-		for(int i = 0; i < length; i++) {
-			output[i] = getBuffer().readByte();
+	public ByteBuf readBytes(int length) throws Exception {
+		if(length < 0) {
+			throw new Exception("Length cannot be less than 0");
 		}
-		return output;
+
+		if(buffer.readerIndex() + length > buffer.writerIndex()) {
+			throw new Exception("Length exceeds the buffer length!");
+		}
+
+		return getBuffer().readBytes(length);
+	}
+
+	public ByteBuf readSlice(int length) {
+		return buffer.readSlice(length).copy();
 	}
 
 	public void skipBytes(int length) {
-		getBuffer().skipBytes(length);
+		buffer.skipBytes(length);
 	}
 
 	public void skipReadable() {
-		getBuffer().skipBytes(getBuffer().readableBytes());
+		buffer.skipBytes(buffer.readableBytes());
 	}
 
 	public boolean isReadable() {
-		return getBuffer().readableBytes() > 0;
+		return buffer.isReadable();
 	}
 
-	public byte[] readRemaining() {
+	public ByteBuf readRemaining() throws Exception {
 		return readBytes(this.length());
 	}
 
 	public void readMagic() {
-		getBuffer().skipBytes(RakNetPacket.MAGIC.length);
+		buffer.skipBytes(RakNetPacket.MAGIC.length);
 	}
 
-
-
 	public String readString() {
-		short length = getBuffer().readShort();
-		return (String) getBuffer().readCharSequence(length, StandardCharsets.UTF_8);
+		short length = buffer.readShort();
+		return (String) buffer.readCharSequence(length, StandardCharsets.UTF_8);
 	}
 
 }

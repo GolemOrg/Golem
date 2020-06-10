@@ -1,6 +1,7 @@
 package net.golem.network.raknet;
 
 import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
@@ -18,6 +19,8 @@ public class RakNetServer {
 	private SessionManager sessionManager;
 
 	private boolean needsContext = true;
+
+	private NioEventLoopGroup group;
 
 	private ChannelHandlerContext context;
 
@@ -49,9 +52,9 @@ public class RakNetServer {
 	}
 
 	public void run() throws InterruptedException {
-		NioEventLoopGroup group = new NioEventLoopGroup();
+		this.group = new NioEventLoopGroup();
 		new Bootstrap()
-				.group(group)
+				.group(this.group)
 				.option(ChannelOption.SO_REUSEADDR, true)
 				.channel(NioDatagramChannel.class)
 				.handler(new ChannelInitializer<NioDatagramChannel>() {
@@ -70,6 +73,10 @@ public class RakNetServer {
 				.channel()
 				.closeFuture();
 		this.sessionManager = new SessionManager(this);
+	}
+
+	public NioEventLoopGroup getGroup() {
+		return group;
 	}
 
 	public SessionManager getSessionManager() {

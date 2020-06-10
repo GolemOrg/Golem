@@ -1,11 +1,12 @@
 package net.golem.network.raknet.protocol;
 
+import io.netty.buffer.ByteBuf;
 import net.golem.network.raknet.codec.PacketDecoder;
 import net.golem.network.raknet.codec.PacketEncoder;
 
 public class RawRakNetPacket extends RakNetPacket {
 
-	public byte[] buffer;
+	public ByteBuf buffer;
 
 	public RawRakNetPacket(int id) {
 		super(id);
@@ -13,7 +14,11 @@ public class RawRakNetPacket extends RakNetPacket {
 
 	@Override
 	public void decode(PacketDecoder decoder) {
-		this.buffer = decoder.readRemaining();
+		try {
+			this.buffer = decoder.readRemaining();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override

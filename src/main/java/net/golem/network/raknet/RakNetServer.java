@@ -1,18 +1,15 @@
 package net.golem.network.raknet;
 
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioDatagramChannel;
 import net.golem.network.raknet.handler.codec.RakNetDecodeHandler;
-import net.golem.network.raknet.handler.codec.RakNetEncodeHandler;
-import net.golem.network.raknet.handler.packet.OpenConnectionReply1Handler;
-import net.golem.network.raknet.handler.packet.OpenConnectionReply2Handler;
+import net.golem.network.raknet.handler.packet.OpenConnectionRequest1Handler;
+import net.golem.network.raknet.handler.packet.OpenConnectionRequest2Handler;
 import net.golem.network.raknet.handler.packet.UnconnectedPingHandler;
-import net.golem.network.raknet.protocol.RakNetPacketFactory;
 import net.golem.network.raknet.session.SessionManager;
 
 
@@ -63,8 +60,8 @@ public class RakNetServer {
 						channel.pipeline().addLast(
 								new RakNetDecodeHandler(RakNetServer.this),
 								new UnconnectedPingHandler(RakNetServer.this),
-								new OpenConnectionReply1Handler(RakNetServer.this),
-								new OpenConnectionReply2Handler(RakNetServer.this)
+								new OpenConnectionRequest1Handler(RakNetServer.this),
+								new OpenConnectionRequest2Handler(RakNetServer.this)
 						);
 					}
 				})

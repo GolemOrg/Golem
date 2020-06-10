@@ -1,7 +1,6 @@
 package net.golem.network.raknet.session;
 
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.nio.NioEventLoopGroup;
 import net.golem.network.raknet.DataPacket;
 import net.golem.network.raknet.RakNetAddressedEnvelope;
 import net.golem.network.raknet.RakNetServer;
@@ -13,16 +12,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class SessionManager extends RakNetInboundPacketHandler<DataPacket> {
 
-	private NioEventLoopGroup sessionGroup = new NioEventLoopGroup();
-
 	private ConcurrentHashMap<InetSocketAddress, Session> sessions = new ConcurrentHashMap<>();
 
 	public SessionManager(RakNetServer server) {
 		super(server, RakNetPacket.class);
-	}
-
-	public NioEventLoopGroup getSessionGroup() {
-		return sessionGroup;
 	}
 
 	public ConcurrentHashMap<InetSocketAddress, Session> getSessions() {
@@ -52,8 +45,9 @@ public class SessionManager extends RakNetInboundPacketHandler<DataPacket> {
 		if(this.contains(socketAddress)) {
 			throw new SessionException("Session already exists!");
 		}
-		this.sessions.put(socketAddress, new RakNetSession(this.getRakNet(), this, socketAddress, this.getRakNet().getContext()));
-		return null;
+		RakNetSession session = new RakNetSession(this.getRakNet(), this, socketAddress, this.getRakNet().getContext());
+		this.sessions.put(socketAddress, session);
+		return session;
 	}
 
 	public void remove(RakNetSession session) {

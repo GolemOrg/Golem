@@ -11,9 +11,9 @@ import net.golem.network.raknet.protocol.connection.response.OpenConnectionReply
 
 
 @Log4j2
-public class OpenConnectionReply1Handler extends RakNetInboundPacketHandler<OpenConnectionRequest1Packet> {
+public class OpenConnectionRequest1Handler extends RakNetInboundPacketHandler<OpenConnectionRequest1Packet> {
 
-	public OpenConnectionReply1Handler(RakNetServer rakNet) {
+	public OpenConnectionRequest1Handler(RakNetServer rakNet) {
 		super(rakNet, OpenConnectionRequest1Packet.class);
 	}
 

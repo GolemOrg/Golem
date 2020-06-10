@@ -21,13 +21,8 @@ public class OpenConnectionReply1Handler extends RakNetInboundPacketHandler<Open
 	protected void handlePacket(ChannelHandlerContext context, RakNetAddressedEnvelope<OpenConnectionRequest1Packet> message) {
 		OpenConnectionRequest1Packet request = message.content();
 		OpenConnectionReply1Packet response = new OpenConnectionReply1Packet();
-
-		log.info("Received request packet!");
-
 		response.maximumTransferUnits = request.maximumTransferUnits;
 		response.guid = Server.getInstance().getGlobalUniqueId().getMostSignificantBits();
-
-		log.info(String.format("MTU Size: %s", response.maximumTransferUnits));
 		this.sendPacket(context, response, message.recipient());
 	}
 }

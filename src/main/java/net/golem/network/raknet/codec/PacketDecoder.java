@@ -59,12 +59,20 @@ public class PacketDecoder {
 		return getBuffer().readShort();
 	}
 
+	public int readUnsignedShort() {
+		return getBuffer().readUnsignedShort();
+	}
+
 	public int readMedium() {
 		return getBuffer().readMedium();
 	}
 
 	public int readInt() {
 		return getBuffer().readInt();
+	}
+
+	public int readUnsignedInt() {
+		return (int) getBuffer().readUnsignedInt();
 	}
 
 	public long readLong() {
@@ -87,6 +95,10 @@ public class PacketDecoder {
 		return getBuffer().readByte();
 	}
 
+	public int readUnsignedByte() {
+		return getBuffer().readUnsignedByte();
+	}
+
 	public byte[] readBytes(int length) {
 		byte[] output = new byte[length];
 
@@ -105,9 +117,19 @@ public class PacketDecoder {
 		getBuffer().skipBytes(getBuffer().readableBytes());
 	}
 
+	public boolean isReadable() {
+		return getBuffer().readableBytes() > 0;
+	}
+
+	public byte[] readRemaining() {
+		return readBytes(this.length());
+	}
+
 	public void readMagic() {
 		getBuffer().skipBytes(RakNetPacket.MAGIC.length);
 	}
+
+
 
 	public String readString() {
 		short length = getBuffer().readShort();

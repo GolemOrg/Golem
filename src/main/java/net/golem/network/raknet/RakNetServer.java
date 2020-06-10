@@ -2,6 +2,7 @@ package net.golem.network.raknet;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -11,27 +12,39 @@ import net.golem.network.raknet.handler.codec.RakNetEncodeHandler;
 import net.golem.network.raknet.handler.packet.OpenConnectionReply1Handler;
 import net.golem.network.raknet.handler.packet.OpenConnectionReply2Handler;
 import net.golem.network.raknet.handler.packet.UnconnectedPingHandler;
-import net.golem.network.raknet.protocol.RakNetPacket;
 import net.golem.network.raknet.protocol.RakNetPacketFactory;
 import net.golem.network.raknet.session.SessionManager;
 
-import java.net.InetSocketAddress;
 
 public class RakNetServer {
 
-	private RakNetPacketFactory packetFactory = new RakNetPacketFactory(this);
-
 	private SessionManager sessionManager;
+
+	private boolean needsContext = true;
+
+	private ChannelHandlerContext context;
+
+	private long startTime;
 
 	private final int port;
 
 	public RakNetServer(int port) throws InterruptedException {
 		this.port = port;
+		this.startTime = System.currentTimeMillis();
 		this.run();
 	}
 
-	public RakNetPacketFactory getPacketFactory() {
-		return packetFactory;
+	public boolean needsContext() {
+		return this.needsContext;
+	}
+
+	public void setContext(ChannelHandlerContext context) {
+		this.context = context;
+		this.needsContext = false;
+	}
+
+	public ChannelHandlerContext getContext() {
+		return context;
 	}
 
 	public int getPort() {
@@ -51,8 +64,7 @@ public class RakNetServer {
 								new RakNetDecodeHandler(RakNetServer.this),
 								new UnconnectedPingHandler(RakNetServer.this),
 								new OpenConnectionReply1Handler(RakNetServer.this),
-								new OpenConnectionReply2Handler(RakNetServer.this),
-								new RakNetEncodeHandler(RakNetServer.this)
+								new OpenConnectionReply2Handler(RakNetServer.this)
 						);
 					}
 				})
@@ -66,4 +78,9 @@ public class RakNetServer {
 	public SessionManager getSessionManager() {
 		return sessionManager;
 	}
+
+	public long getRakNetTimeMS() {
+		return System.currentTimeMillis() - this.startTime;
+	}
+
 }

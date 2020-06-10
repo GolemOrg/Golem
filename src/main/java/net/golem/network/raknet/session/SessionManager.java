@@ -2,22 +2,20 @@ package net.golem.network.raknet.session;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.nio.NioEventLoopGroup;
+import net.golem.network.raknet.DataPacket;
 import net.golem.network.raknet.RakNetAddressedEnvelope;
 import net.golem.network.raknet.RakNetServer;
 import net.golem.network.raknet.handler.RakNetInboundPacketHandler;
 import net.golem.network.raknet.protocol.RakNetPacket;
-import net.golem.network.raknet.protocol.connection.request.OpenConnectionRequest1Packet;
 
 import java.net.InetSocketAddress;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class SessionManager extends RakNetInboundPacketHandler<RakNetPacket> {
+public class SessionManager extends RakNetInboundPacketHandler<DataPacket> {
 
 	private NioEventLoopGroup sessionGroup = new NioEventLoopGroup();
 
 	private ConcurrentHashMap<InetSocketAddress, Session> sessions = new ConcurrentHashMap<>();
-
-	private ChannelHandlerContext context;
 
 	public SessionManager(RakNetServer server) {
 		super(server, RakNetPacket.class);
@@ -36,7 +34,7 @@ public class SessionManager extends RakNetInboundPacketHandler<RakNetPacket> {
 	}
 
 	public Session get(InetSocketAddress address) {
-		return this.get(address, false);
+		return this.get(address, true);
 	}
 
 	public Session get(InetSocketAddress address, boolean create) {
@@ -54,16 +52,19 @@ public class SessionManager extends RakNetInboundPacketHandler<RakNetPacket> {
 		if(this.contains(socketAddress)) {
 			throw new SessionException("Session already exists!");
 		}
-		//we need to create a session here, but let's wait until the RakNetSession is complete
+		this.sessions.put(socketAddress, new RakNetSession(this.getRakNet(), this, socketAddress, this.getRakNet().getContext()));
 		return null;
 	}
 
-	@Override
-	protected void handlePacket(ChannelHandlerContext context, RakNetAddressedEnvelope<RakNetPacket> message) {
-		if(this.context == null) {
-			this.context = context;
+	public void remove(RakNetSession session) {
+		if(this.contains(session.getAddress())) {
+			this.getSessions().remove(session.getAddress());
 		}
-		RakNetPacket packet = message.content();
+	}
+
+	@Override
+	protected void handlePacket(ChannelHandlerContext context, RakNetAddressedEnvelope<DataPacket> message) {
+		DataPacket packet = message.content();
 		InetSocketAddress sender = message.sender();
 		Session session;
 

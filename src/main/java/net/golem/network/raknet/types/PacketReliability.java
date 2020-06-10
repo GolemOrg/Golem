@@ -1,5 +1,7 @@
 package net.golem.network.raknet.types;
 
+import java.util.Arrays;
+
 public enum PacketReliability {
 
 	UNRELIABLE(0, false, false, false, false),
@@ -51,4 +53,9 @@ public enum PacketReliability {
 	public boolean needsAck() {
 		return this.needsAck;
 	}
+
+	public static PacketReliability from(int reliability) {
+		return Arrays.stream(PacketReliability.values()).filter(packetReliability -> packetReliability.getId() == reliability).findFirst().orElse(null);
+	}
+
 }

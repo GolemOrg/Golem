@@ -2,22 +2,20 @@ package net.golem.network.raknet.codec;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import lombok.extern.log4j.Log4j2;
 import net.golem.network.raknet.RakNetAddressUtils;
 import net.golem.network.raknet.protocol.RakNetPacket;
 
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 
+@Log4j2
 public class PacketEncoder {
 
 	private ByteBuf buffer = Unpooled.buffer();
 
 	public ByteBuf getBuffer() {
 		return buffer;
-	}
-
-	public void reset() {
-		this.buffer = Unpooled.buffer();
 	}
 
 	public int length() {
@@ -48,7 +46,6 @@ public class PacketEncoder {
 			} else {
 				throw new Exception(String.format("Unknown IP type %s", type));
 			}
-			this.writeBytes(address.getAddress().getAddress());
 			this.writeShort((short) address.getPort());
 		} catch(Exception exception) {
 			exception.printStackTrace();

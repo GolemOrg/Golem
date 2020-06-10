@@ -25,7 +25,6 @@ public class OpenConnectionRequest2Packet extends RakNetPacket {
 	public void decode(PacketDecoder decoder) {
 		decoder.readMagic();
 		serverAddress = decoder.readAddress();
-		log.info(serverAddress);
 		maximumTransferUnits = decoder.readShort();
 		clientId = decoder.readLong();
 	}

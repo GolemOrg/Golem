@@ -8,6 +8,7 @@ import net.golem.network.raknet.RakNetServer;
 import net.golem.network.raknet.handler.RakNetInboundPacketHandler;
 import net.golem.network.raknet.protocol.connection.request.OpenConnectionRequest2Packet;
 import net.golem.network.raknet.protocol.connection.response.OpenConnectionReply2Packet;
+import net.golem.network.raknet.session.SessionException;
 
 @Log4j2
 public class OpenConnectionReply2Handler extends RakNetInboundPacketHandler<OpenConnectionRequest2Packet> {
@@ -22,14 +23,16 @@ public class OpenConnectionReply2Handler extends RakNetInboundPacketHandler<Open
 		OpenConnectionRequest2Packet request = message.content();
 		OpenConnectionReply2Packet response = new OpenConnectionReply2Packet();
 
-		log.info("Second request packet received!");
-
 		response.serverId = Server.getInstance().getGlobalUniqueId().getMostSignificantBits();
 		response.maximumTransferUnits = request.maximumTransferUnits;
 
 		response.clientAddress = message.recipient();
 
-		log.info(String.format("MTU Size: %s", response.maximumTransferUnits));
 		this.sendPacket(context, response, message.recipient());
+		try {
+			this.getRakNet().getSessionManager().create(message.recipient());
+		} catch (SessionException e) {
+			e.printStackTrace();
+		}
 	}
 }

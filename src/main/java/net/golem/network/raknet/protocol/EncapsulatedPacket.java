@@ -101,12 +101,12 @@ public class EncapsulatedPacket {
 	public int getTotalLength() {
 		return
 				1 + // reliability
-				2 + // length
-				(this.reliability.isReliable() ? 3 : 0) +  // message index
-				(this.reliability.isSequenced() ? 3 : 0) + // sequence index
-				(this.reliability.isSequenced() || this.reliability.isOrdered() ? 3 + 1 : 0) + // order index (3) + order channel (1)
-				(this.splitInfo != null ? 4 + 2 + 4 : 0) + // split count (4) + split ID (2) + split index (4)
-				this.buffer.writerIndex();
+						2 + // length
+						(this.reliability.isReliable() ? 3 : 0) +  // message index
+						(this.reliability.isSequenced() ? 3 : 0) + // sequence index
+						(this.reliability.isSequenced() || this.reliability.isOrdered() ? 3 + 1 : 0) + // order index (3) + order channel (1)
+						(this.splitInfo != null ? 4 + 2 + 4 : 0) + // split count (4) + split ID (2) + split index (4)
+						this.buffer.writerIndex();
 	}
 
 	@Override

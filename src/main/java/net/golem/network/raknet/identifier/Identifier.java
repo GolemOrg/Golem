@@ -31,7 +31,6 @@ public class Identifier {
 				this.getServer().getConfiguration().getWorldName(),
 				this.getServer().getConfiguration().getDefaultGamemode(),
 				this.getServer().getConfiguration().isLimitedToSwitch() ? "0" : "1",
-				this.getServer().getConfiguration().getPort(),
 				this.getServer().getConfiguration().getPort()
 			)
 		);

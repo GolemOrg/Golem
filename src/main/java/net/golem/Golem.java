@@ -1,7 +1,7 @@
 package net.golem;
 
 /**
- * Main class to initiate Gollum
+ * Main class to initiate Golem
  */
 public class Golem {
 

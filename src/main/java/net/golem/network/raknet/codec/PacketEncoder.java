@@ -6,6 +6,8 @@ import lombok.extern.log4j.Log4j2;
 import net.golem.network.raknet.RakNetAddressUtils;
 import net.golem.network.raknet.protocol.RakNetPacket;
 
+import java.net.Inet4Address;
+import java.net.Inet6Address;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 
@@ -31,20 +33,20 @@ public class PacketEncoder {
 			if(address == null || address.getAddress() == null) {
 				throw new NullPointerException("Address or IP address null");
 			}
-			int type = RakNetAddressUtils.getAddressVersion(address.getAddress());
 			ByteBuf addressBytes = Unpooled.copiedBuffer(address.getAddress().getAddress());
-			this.writeByte((byte) type);
-			if(type == RakNetAddressUtils.IPV4) {
-				for (byte addressByte : addressBytes.array()) this.writeByte((byte) (~addressByte & 0xFF));
+			this.writeByte((byte) RakNetAddressUtils.getAddressVersion(address.getAddress()));
+			if(address.getAddress() instanceof Inet4Address) {
+				flip(addressBytes);
+				this.writeBytes(addressBytes);
 				this.writeShort((short) address.getPort());
-			} else if(type == RakNetAddressUtils.IPV6) {
-				this.writeShort((short) RakNetAddressUtils.AF_INET6);
-				this.writeShort((short) address.getPort());
+			} else if(address.getAddress() instanceof Inet6Address) {
+				this.writeByte((byte) RakNetAddressUtils.AF_INET6);
+				this.writeShortLE((short) address.getPort());
 				this.writeInt(0x00); // Flow info
 				this.writeBytes(addressBytes);
-				this.writeInt(0x00); //Scope ID
+				this.writeInt(((Inet6Address) address.getAddress()).getScopeId()); //Scope ID
 			} else {
-				throw new Exception(String.format("Unknown IP type %s", type));
+				throw new Exception("Unknown InetAddress type");
 			}
 			this.writeShort((short) address.getPort());
 		} catch(Exception exception) {
@@ -52,12 +54,26 @@ public class PacketEncoder {
 		}
 	}
 
+	public void flip(ByteBuf buffer) {
+		for(int i = 0; i < buffer.capacity(); i++) {
+			buffer.setByte(i, ~(buffer.getByte(i) & 0xFF));
+		}
+	}
+
 	public void writeShort(short value) {
 		buffer.writeShort(value);
 	}
 
+	public void writeShortLE(short value) {
+		buffer.writeShortLE(value);
+	}
+
 	public void writeMedium(int value) {
 		buffer.writeMedium(value);
+	}
+
+	public void writeMediumLE(int value) {
+		buffer.writeMediumLE(value);
 	}
 
 	public void writeInt(int value) {

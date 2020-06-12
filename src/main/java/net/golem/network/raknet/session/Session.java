@@ -15,7 +15,7 @@ public interface Session {
 
 	void setMaximumTransferUnits(int size);
 
-	void update();
+	void tick();
 
 	void handle(DataPacket packet);
 

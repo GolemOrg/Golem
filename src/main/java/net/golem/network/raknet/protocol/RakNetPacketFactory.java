@@ -6,6 +6,7 @@ import net.golem.network.raknet.BitFlags;
 import net.golem.network.raknet.DataPacket;
 import net.golem.network.raknet.codec.PacketDecoder;
 import net.golem.network.raknet.protocol.connection.ConnectionRequestPacket;
+import net.golem.network.raknet.protocol.connection.IncompatibleProtocolPacket;
 import net.golem.network.raknet.protocol.connection.request.OpenConnectionRequest1Packet;
 import net.golem.network.raknet.protocol.connection.request.OpenConnectionRequest2Packet;
 import net.golem.network.raknet.protocol.unconnected.UnconnectedPingPacket;
@@ -47,6 +48,8 @@ public class RakNetPacketFactory {
 				case RakNetPacketIds.CONNECTION_REQUEST:
 					packet = new ConnectionRequestPacket();
 					break;
+				case RakNetPacketIds.DISCONNECTION_REQUEST:
+					packet = new DisconnectionNotificationPacket();
 			}
 		}
 		if(packet == null) {

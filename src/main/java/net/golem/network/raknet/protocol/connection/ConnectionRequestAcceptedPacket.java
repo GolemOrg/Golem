@@ -8,8 +8,6 @@ import net.golem.network.raknet.protocol.RakNetPacketIds;
 import net.golem.network.raknet.types.AddressCount;
 
 import java.net.InetSocketAddress;
-import java.util.ArrayList;
-import java.util.Arrays;
 
 @Log4j2
 public class ConnectionRequestAcceptedPacket extends RakNetPacket {
@@ -47,7 +45,6 @@ public class ConnectionRequestAcceptedPacket extends RakNetPacket {
 		for (InetSocketAddress inetSocketAddress : addresses) {
 			encoder.writeAddress(inetSocketAddress != null ? inetSocketAddress : dummy);
 		}
-
 		encoder.writeLong(sendPingTime);
 		encoder.writeLong(sendPongTime);
 	}

@@ -2,14 +2,17 @@ package net.golem.network.raknet.protocol;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import lombok.extern.log4j.Log4j2;
 import net.golem.network.raknet.codec.PacketDecoder;
 import net.golem.network.raknet.codec.PacketEncoder;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
+@Log4j2
 public class AcknowledgePacket extends SessionPacket {
+
+	public static final int RECORD_TYPE_RANGE = 0;
+	public static final int RECORD_TYPE_SINGLE = 1;
 
 	public Set<Integer> records = new HashSet<>();
 
@@ -30,12 +33,12 @@ public class AcknowledgePacket extends SessionPacket {
 		records = new HashSet<>();
 		int count = decoder.readUnsignedShort();
 		for(int i = 0; i < count; i++) {
-			boolean isRange = decoder.readBoolean();
-			if(isRange) {
-				records.add(decoder.readMedium());
+			int type = decoder.readByte();
+			if(type == RECORD_TYPE_SINGLE) {
+				records.add(decoder.readUnsignedMediumLE());
 			} else {
-				int startIndex = decoder.readMedium();
-				int endIndex = decoder.readMedium();
+				int startIndex = decoder.readUnsignedMediumLE();
+				int endIndex = decoder.readUnsignedMediumLE();
 				for(int index = startIndex; index <= endIndex; index++) {
 					records.add(index);
 				}
@@ -47,31 +50,38 @@ public class AcknowledgePacket extends SessionPacket {
 	public void encode(PacketEncoder encoder) {
 		ByteBuf buffer = Unpooled.buffer();
 
-		int recodeCnt = 0;
+		Integer[] sorted = records.toArray(new Integer[0]);
+		Arrays.sort(sorted);
 
-		Integer[] records = this.records.toArray(new Integer[0]);
-		Arrays.sort(records);
+		int records = 0;
+		int count = sorted.length;
 
-		for(int i = 0; i < records.length; i++) {
-			int startIndex = records[i];
-			int endIndex = startIndex;
-
-			while(i + 1 < records.length && records[i + 1] == (endIndex + 1)) {
-				endIndex++;
-				i++;
+		if(count > 0) {
+			int pointer = 1;
+			int start = sorted[0];
+			int end = start;
+			while(pointer < count) {
+				int current = sorted[pointer++];
+				int difference = current - end;
+				if(difference == 1) {
+					end = current;
+				} else if(difference > 1) {
+					boolean single = start == end;
+					buffer.writeByte(single ? RECORD_TYPE_SINGLE : RECORD_TYPE_RANGE);
+					buffer.writeMediumLE(start);
+					if(!single) buffer.writeMediumLE(end);
+					start = end = current;
+					++records;
+				}
 			}
 
-			if(startIndex == endIndex) {
-				buffer.writeBoolean(true);
-				buffer.writeMediumLE(startIndex);
-			} else {
-				buffer.writeBoolean(false);
-				buffer.writeMediumLE(startIndex);
-				buffer.writeMediumLE(endIndex);
-				recodeCnt++;
-			}
+			boolean single = start == end;
+			buffer.writeByte(single ? RECORD_TYPE_SINGLE : RECORD_TYPE_RANGE);
+			buffer.writeMediumLE(start);
+			if(!single) buffer.writeMediumLE(end);
+			++records;
 		}
-		encoder.writeShort((short) recodeCnt);
+		encoder.writeShort((short) records);
 		encoder.writeBytes(buffer);
 	}
 

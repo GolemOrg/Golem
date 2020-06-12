@@ -1,7 +1,6 @@
 package net.golem.network.raknet;
 
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
@@ -15,6 +14,8 @@ import net.golem.network.raknet.session.SessionManager;
 
 
 public class RakNetServer {
+
+	public static final int PROTOCOL_VERSION = 9;
 
 	private SessionManager sessionManager;
 

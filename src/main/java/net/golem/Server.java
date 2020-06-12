@@ -22,7 +22,7 @@ public class Server {
 	/**
 	 * TODO: Move this stuff
 	 */
-	public static final int PROTOCOL_VERSION = 390;
+	public static final int PROTOCOL_VERSION = 389;
 
 
 	protected static int TICKS_PER_SECOND = 20;
@@ -43,7 +43,7 @@ public class Server {
 
 	private ServerConfiguration configuration;
 
-	private ServerConsole console;
+	private final ServerConsole console = new ServerConsole(this);
 
 	private CommandRegistry commandRegistry;
 
@@ -53,10 +53,9 @@ public class Server {
 	private PlayerManager playerManager;
 	private WorldManager worldManager;
 
-	private AtomicBoolean running = new AtomicBoolean(true);
+	private final AtomicBoolean running = new AtomicBoolean(true);
 
 	public Server() {
-		this.console = new ServerConsole(this);
 		instance = this;
 		this.start();
 	}

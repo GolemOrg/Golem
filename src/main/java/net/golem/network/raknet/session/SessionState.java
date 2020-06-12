@@ -1,7 +1,8 @@
 package net.golem.network.raknet.session;
 
 public enum SessionState {
-	CLOSED,
+	INITIALIZING,
 	CONNECTING,
-	CONNECTED
+	CONNECTED,
+	DISCONNECTED
 }

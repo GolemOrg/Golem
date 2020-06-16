@@ -44,11 +44,10 @@ public class PacketEncoder {
 				this.writeShortLE((short) address.getPort());
 				this.writeInt(0x00); // Flow info
 				this.writeBytes(addressBytes);
-				this.writeInt(((Inet6Address) address.getAddress()).getScopeId()); //Scope ID
+				this.writeInt(((Inet6Address) address.getAddress()).getScopeId());
 			} else {
 				throw new Exception("Unknown InetAddress type");
 			}
-			this.writeShort((short) address.getPort());
 		} catch(Exception exception) {
 			exception.printStackTrace();
 		}

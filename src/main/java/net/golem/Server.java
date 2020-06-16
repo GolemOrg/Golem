@@ -5,6 +5,7 @@ import lombok.extern.log4j.Log4j2;
 import net.golem.block.BlockFactory;
 import net.golem.command.CommandRegistry;
 import net.golem.item.ItemFactory;
+import net.golem.network.ServerIdentifier;
 import net.golem.network.raknet.RakNetServer;
 import net.golem.network.raknet.identifier.Identifier;
 import net.golem.player.PlayerManager;
@@ -22,7 +23,7 @@ public class Server {
 	/**
 	 * TODO: Move this stuff
 	 */
-	public static final int PROTOCOL_VERSION = 389;
+	public static final int PROTOCOL_VERSION = 390;
 
 
 	protected static int TICKS_PER_SECOND = 20;
@@ -119,11 +120,13 @@ public class Server {
 
 		this.playerManager = new PlayerManager(this);
 		this.worldManager = new WorldManager(this);
-		this.identifier = new Identifier(this);
+		this.identifier = new ServerIdentifier(this);
 		try {
-			this.rakNet = new RakNetServer(getConfiguration().getPort());
+			this.rakNet = new RakNetServer("0.0.0.0", getConfiguration().getPort(), identifier);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
+			this.shutdown();
+			return;
 		}
 		getLogger().info("The server has started successfully!");
 		this.tickProcessor();
@@ -136,6 +139,10 @@ public class Server {
 	public void stop() {
 		getLogger().info("Shutting down server...");
 		this.setRunning(false);
+	}
+
+	public void shutdown() {
+		rakNet.shutdown();
 	}
 
 	public boolean tick() {
@@ -170,7 +177,7 @@ public class Server {
 				exception.printStackTrace();
 			}
 		}
-		rakNet.getGroup().shutdownGracefully();
+		this.shutdown();
 	}
 
 }

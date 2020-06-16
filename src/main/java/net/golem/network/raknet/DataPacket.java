@@ -1,12 +1,14 @@
 package net.golem.network.raknet;
 
 import io.netty.buffer.ByteBuf;
+import lombok.extern.log4j.Log4j2;
 import net.golem.network.raknet.codec.PacketDecoder;
 import net.golem.network.raknet.codec.PacketEncoder;
 
 /**
  * Packet used for interfacing between RakNet
  */
+@Log4j2
 public abstract class DataPacket {
 
 	protected int id;

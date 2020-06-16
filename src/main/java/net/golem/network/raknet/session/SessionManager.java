@@ -1,9 +1,9 @@
 package net.golem.network.raknet.session;
 
 import io.netty.channel.ChannelHandlerContext;
+import net.golem.network.raknet.RakNetServer;
 import net.golem.network.raknet.DataPacket;
 import net.golem.network.raknet.RakNetAddressedEnvelope;
-import net.golem.network.raknet.RakNetServer;
 import net.golem.network.raknet.handler.RakNetInboundPacketHandler;
 import net.golem.network.raknet.protocol.RakNetPacket;
 

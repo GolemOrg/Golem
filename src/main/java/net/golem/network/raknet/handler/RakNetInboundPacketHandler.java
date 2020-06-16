@@ -3,10 +3,10 @@ package net.golem.network.raknet.handler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.DatagramPacket;
-import net.golem.network.raknet.DataPacket;
 import net.golem.network.raknet.RakNetServer;
-import net.golem.network.raknet.RakNetAddressedEnvelope;
 import net.golem.network.raknet.codec.PacketEncoder;
+import net.golem.network.raknet.DataPacket;
+import net.golem.network.raknet.RakNetAddressedEnvelope;
 import net.golem.network.raknet.protocol.RakNetPacket;
 
 import java.net.InetSocketAddress;

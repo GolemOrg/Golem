@@ -2,11 +2,9 @@ package net.golem.network.raknet.handler.packet;
 
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.log4j.Log4j2;
-import net.golem.Server;
 import net.golem.network.raknet.RakNetServer;
-import net.golem.network.raknet.RakNetAddressedEnvelope;
 import net.golem.network.raknet.handler.RakNetInboundPacketHandler;
-import net.golem.network.raknet.identifier.Identifier;
+import net.golem.network.raknet.RakNetAddressedEnvelope;
 import net.golem.network.raknet.protocol.unconnected.UnconnectedPingPacket;
 import net.golem.network.raknet.protocol.unconnected.UnconnectedPongPacket;
 
@@ -21,11 +19,9 @@ public class UnconnectedPingHandler extends RakNetInboundPacketHandler<Unconnect
 	protected void handlePacket(ChannelHandlerContext context, RakNetAddressedEnvelope<UnconnectedPingPacket> message) {
 		UnconnectedPingPacket ping = message.content();
 		UnconnectedPongPacket pong = new UnconnectedPongPacket();
-		Server server = Server.getInstance();
-		Identifier identifier = server.getIdentifier();
 		pong.pingId = ping.pingId;
-		pong.guid = server.getGlobalUniqueId().getMostSignificantBits();
-		pong.serverName = identifier.build();
+		pong.guid = getRakNet().getGlobalUniqueId();
+		pong.serverName = getRakNet().getIdentifier().build();
 
 		this.sendPacket(context, pong, message.recipient());
 	}

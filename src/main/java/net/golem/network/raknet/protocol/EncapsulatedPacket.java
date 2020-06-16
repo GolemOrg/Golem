@@ -1,7 +1,6 @@
 package net.golem.network.raknet.protocol;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import lombok.extern.log4j.Log4j2;
 import net.golem.network.raknet.codec.PacketDecoder;
 import net.golem.network.raknet.codec.PacketEncoder;
@@ -75,25 +74,37 @@ public class EncapsulatedPacket {
 		}
 		encoder.writeByte((byte) flags);
 		encoder.writeShort((short) (encoder.getBuffer().writerIndex() * 8));
+		log.info("[ENCAPSULATED] Writing flags: {}", flags);
+
+		log.info("[ENCAPSULATED] Writing writer index short: {}", encoder.getBuffer().writerIndex() * 8);
 
 		if(reliability.isReliable()) {
 			encoder.getBuffer().writeMediumLE(messageIndex);
+			log.info("[RELIABLE] Writing message index: {}", messageIndex);
 		}
+
 		if(reliability.isSequenced()) {
 			encoder.getBuffer().writeMediumLE(this.sequenceIndex);
+			log.info("[RELIABLE] Writing sequence index: {}", sequenceIndex);
 		}
 		if(reliability.isSequenced() || reliability.isOrdered()) {
 			encoder.getBuffer().writeMediumLE(orderIndex);
 			encoder.getBuffer().writeByte(orderChannel);
+			log.info("[RELIABLE] Writing order index: {}", orderIndex);
+			log.info("[RELIABLE] Writing order channel: {}", orderChannel);
+
 		}
 
 		if(this.splitInfo != null) {
 			encoder.writeInt(splitInfo.splitCount);
-			encoder.writeShort((short) splitInfo.splitId);
+			encoder.writeShort((short) (splitInfo.splitId & 0xFFFF));
 			encoder.writeInt(splitInfo.splitIndex);
+			log.info("[RELIABLE] Writing split info: {}", splitInfo);
 		}
 
 		encoder.writeBytes(buffer);
+		log.info("[ENCAPSULATED] Writing buffer: {}", buffer);
+
 		buffer.release();
 	}
 

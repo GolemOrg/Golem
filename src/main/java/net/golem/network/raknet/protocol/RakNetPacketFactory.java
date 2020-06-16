@@ -2,13 +2,14 @@ package net.golem.network.raknet.protocol;
 
 import io.netty.buffer.ByteBuf;
 import lombok.extern.log4j.Log4j2;
-import net.golem.network.raknet.BitFlags;
 import net.golem.network.raknet.DataPacket;
 import net.golem.network.raknet.codec.PacketDecoder;
 import net.golem.network.raknet.protocol.connection.ConnectionRequestPacket;
 import net.golem.network.raknet.protocol.connection.IncompatibleProtocolPacket;
+import net.golem.network.raknet.protocol.connection.connected.ConnectedPingPacket;
 import net.golem.network.raknet.protocol.connection.request.OpenConnectionRequest1Packet;
 import net.golem.network.raknet.protocol.connection.request.OpenConnectionRequest2Packet;
+import net.golem.network.raknet.BitFlags;
 import net.golem.network.raknet.protocol.unconnected.UnconnectedPingPacket;
 import net.golem.network.raknet.protocol.unconnected.UnconnectedPongPacket;
 
@@ -50,6 +51,9 @@ public class RakNetPacketFactory {
 					break;
 				case RakNetPacketIds.DISCONNECTION_REQUEST:
 					packet = new DisconnectionNotificationPacket();
+					break;
+				case RakNetPacketIds.CONNECTED_PING:
+					packet = new ConnectedPingPacket();
 			}
 		}
 		if(packet == null) {

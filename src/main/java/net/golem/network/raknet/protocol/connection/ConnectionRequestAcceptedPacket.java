@@ -21,6 +21,7 @@ public class ConnectionRequestAcceptedPacket extends RakNetPacket {
 
 	public ConnectionRequestAcceptedPacket() {
 		super(RakNetPacketIds.CONNECTION_REQUEST_ACCEPTED);
+		addresses[0] = new InetSocketAddress("127.0.0.1", 0);
 	}
 
 	@Override
@@ -40,7 +41,7 @@ public class ConnectionRequestAcceptedPacket extends RakNetPacket {
 	@Override
 	public void encode(PacketEncoder encoder) {
 		encoder.writeAddress(address);
-		encoder.writeShort((short) addresses.length);
+		encoder.writeShort((short) 0);
 		InetSocketAddress dummy = new InetSocketAddress("0.0.0.0", 0);
 		for (InetSocketAddress inetSocketAddress : addresses) {
 			encoder.writeAddress(inetSocketAddress != null ? inetSocketAddress : dummy);

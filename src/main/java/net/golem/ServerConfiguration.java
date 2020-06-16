@@ -14,6 +14,8 @@ public class ServerConfiguration {
 
 	private int port;
 
+	private int ipv6Port;
+
 	private boolean limitedToSwitch;
 
 	public ServerConfiguration(String name, String version, int maxPlayerCount, String worldName, String defaultGamemode, boolean limitedToSwitch, int port) {
@@ -24,6 +26,7 @@ public class ServerConfiguration {
 		this.setDefaultGamemode(defaultGamemode);
 		this.limitedToSwitch = limitedToSwitch;
 		this.port = port;
+		this.ipv6Port = port + 1;
 	}
 
 	public String getName() {
@@ -68,5 +71,9 @@ public class ServerConfiguration {
 
 	public int getPort() {
 		return port;
+	}
+
+	public int getIPv6Port() {
+		return ipv6Port;
 	}
 }

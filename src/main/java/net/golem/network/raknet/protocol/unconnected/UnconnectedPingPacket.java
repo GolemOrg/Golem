@@ -2,8 +2,8 @@ package net.golem.network.raknet.protocol.unconnected;
 
 import net.golem.network.raknet.codec.PacketDecoder;
 import net.golem.network.raknet.codec.PacketEncoder;
-import net.golem.network.raknet.protocol.RakNetPacket;
 import net.golem.network.raknet.protocol.RakNetPacketIds;
+import net.golem.network.raknet.protocol.RakNetPacket;
 
 public class UnconnectedPingPacket extends RakNetPacket {
 

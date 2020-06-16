@@ -2,7 +2,6 @@ package net.golem.network.raknet.session;
 
 
 import net.golem.network.raknet.DataPacket;
-import net.golem.network.raknet.protocol.RakNetPacket;
 import net.golem.network.raknet.types.PacketReliability;
 
 public interface Session {
@@ -19,13 +18,12 @@ public interface Session {
 
 	void handle(DataPacket packet);
 
-	void sendPacket(DataPacket packet, boolean direct);
+	void sendPacket(DataPacket packet, PacketReliability reliability, boolean immediate);
+
+	void sendPacket(DataPacket packet, boolean immediate);
 
 	void sendPacket(DataPacket packet);
 
-	void sendPacket(RakNetPacket packet, PacketReliability reliability);
-
-	void sendPacket(RakNetPacket packet, PacketReliability reliability, boolean immediate);
 
 	void addListener(SessionListener listener);
 }

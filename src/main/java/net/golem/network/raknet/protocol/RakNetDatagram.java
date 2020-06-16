@@ -2,9 +2,9 @@ package net.golem.network.raknet.protocol;
 
 import io.netty.buffer.ByteBuf;
 import lombok.extern.log4j.Log4j2;
-import net.golem.network.raknet.BitFlags;
 import net.golem.network.raknet.codec.PacketDecoder;
 import net.golem.network.raknet.codec.PacketEncoder;
+import net.golem.network.raknet.BitFlags;
 
 import java.util.ArrayList;
 

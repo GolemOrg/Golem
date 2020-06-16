@@ -1,5 +1,7 @@
 package net.golem.network.raknet.protocol;
 
+import com.google.common.collect.Iterators;
+import com.google.common.collect.PeekingIterator;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import lombok.extern.log4j.Log4j2;
@@ -49,39 +51,19 @@ public class AcknowledgePacket extends SessionPacket {
 	@Override
 	public void encode(PacketEncoder encoder) {
 		ByteBuf buffer = Unpooled.buffer();
-
-		Integer[] sorted = records.toArray(new Integer[0]);
-		Arrays.sort(sorted);
-
-		int records = 0;
-		int count = sorted.length;
-
-		if(count > 0) {
-			int pointer = 1;
-			int start = sorted[0];
-			int end = start;
-			while(pointer < count) {
-				int current = sorted[pointer++];
-				int difference = current - end;
-				if(difference == 1) {
-					end = current;
-				} else if(difference > 1) {
-					boolean single = start == end;
-					buffer.writeByte(single ? RECORD_TYPE_SINGLE : RECORD_TYPE_RANGE);
-					buffer.writeMediumLE(start);
-					if(!single) buffer.writeMediumLE(end);
-					start = end = current;
-					++records;
-				}
+		int recordCount = 0;
+		if(records.size() > 0) {
+			PeekingIterator<Integer> iterator = Iterators.peekingIterator(records.iterator());
+			while(iterator.hasNext()) {
+				int current = iterator.next();
+				boolean single = !iterator.hasNext() || (iterator.peek() - current == 1);
+				buffer.writeByte(single ? RECORD_TYPE_SINGLE : RECORD_TYPE_RANGE);
+				buffer.writeMediumLE(current);
+				if(!single) buffer.writeMediumLE(iterator.next());
+				++recordCount;
 			}
-
-			boolean single = start == end;
-			buffer.writeByte(single ? RECORD_TYPE_SINGLE : RECORD_TYPE_RANGE);
-			buffer.writeMediumLE(start);
-			if(!single) buffer.writeMediumLE(end);
-			++records;
 		}
-		encoder.writeShort((short) records);
+		encoder.writeShort((short) recordCount);
 		encoder.writeBytes(buffer);
 	}
 

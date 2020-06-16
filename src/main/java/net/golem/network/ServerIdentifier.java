@@ -8,7 +8,7 @@ import java.util.Arrays;
 
 public class ServerIdentifier extends Identifier {
 
-	private Server server;
+	private final Server server;
 
 	public ServerIdentifier(Server server) {
 		this.server = server;

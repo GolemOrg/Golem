@@ -12,7 +12,7 @@ import net.golem.network.raknet.handler.packet.OpenConnectionRequest1Handler;
 import net.golem.network.raknet.handler.packet.OpenConnectionRequest2Handler;
 import net.golem.network.raknet.handler.packet.UnconnectedPingHandler;
 import net.golem.network.raknet.identifier.Identifier;
-import net.golem.network.raknet.session.Session;
+import net.golem.network.raknet.session.RakNetSession;
 import net.golem.network.raknet.session.SessionManager;
 
 import java.net.InetSocketAddress;
@@ -36,7 +36,7 @@ public class RakNetServer {
 
 	private long startTime;
 
-	private long guid;
+	private UUID guid;
 
 	private Identifier identifier;
 
@@ -46,7 +46,7 @@ public class RakNetServer {
 		instance = this;
 		this.local = new InetSocketAddress(host, port);
 		this.startTime = System.currentTimeMillis();
-		this.guid = UUID.randomUUID().getMostSignificantBits();
+		this.guid = UUID.randomUUID();
 		this.identifier = identifier;
 		this.run();
 	}
@@ -101,7 +101,7 @@ public class RakNetServer {
 		}
 
 		this.running = false;
-		getSessionManager().getSessions().values().forEach(Session::close);
+		getSessionManager().getSessions().values().forEach(RakNetSession::close);
 		group.shutdownGracefully();
 		log.info("Shutting down RakNet" + (reason != null ? String.format(" for reason: %s", reason) : "") + "...");
 	}
@@ -118,7 +118,7 @@ public class RakNetServer {
 		return System.currentTimeMillis() - this.startTime;
 	}
 
-	public long getGlobalUniqueId() {
+	public UUID getGlobalUniqueId() {
 		return guid;
 	}
 

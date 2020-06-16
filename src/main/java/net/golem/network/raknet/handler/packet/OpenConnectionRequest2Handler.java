@@ -22,7 +22,7 @@ public class OpenConnectionRequest2Handler extends RakNetInboundPacketHandler<Op
 		OpenConnectionRequest2Packet request = message.content();
 		OpenConnectionReply2Packet response = new OpenConnectionReply2Packet();
 
-		response.serverId = getRakNet().getGlobalUniqueId();
+		response.serverId = getRakNet().getGlobalUniqueId().getMostSignificantBits();
 		response.maximumTransferUnits = request.maximumTransferUnits;
 
 		response.clientAddress = message.recipient();

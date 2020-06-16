@@ -1,6 +1,7 @@
 package net.golem.network.raknet;
 
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 
 public class RakNetAddressUtils {
 
@@ -11,6 +12,8 @@ public class RakNetAddressUtils {
 
 	public static int IPV4_ADDRESS_LENGTH = 4;
 	public static int IPV6_ADDRESS_LENGTH = 16;
+
+	public static final InetSocketAddress SYSTEM_ADDRESS = new InetSocketAddress("0.0.0.0", 0);
 
 	public static int getAddressVersion(InetAddress address) {
 		if(address == null) throw new NullPointerException("Address is null");

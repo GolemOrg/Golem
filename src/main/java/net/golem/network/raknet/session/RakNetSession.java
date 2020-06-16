@@ -1,10 +1,12 @@
 package net.golem.network.raknet.session;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.DatagramPacket;
 import lombok.extern.log4j.Log4j2;
+import net.golem.network.raknet.BufferUtils;
 import net.golem.network.raknet.DataPacket;
 import net.golem.network.raknet.RakNetServer;
 import net.golem.network.raknet.codec.PacketEncoder;
@@ -26,7 +28,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
 
 @Log4j2
-public class RakNetSession implements Session {
+public class RakNetSession {
 
 	public static final long STALE_TIME = 5000L;
 	public static final long TIMEOUT_TIME = 15000L;
@@ -64,9 +66,6 @@ public class RakNetSession implements Session {
 
 	protected Set<Integer> ackQueue = new HashSet<>();
 	protected int highestSequenceNumber = -1;
-
-	protected ArrayList<SessionListener> listeners = new ArrayList<>();
-
 
 	protected LinkedHashMap<Integer, DataPacket> needACKs = new LinkedHashMap<>();
 
@@ -115,20 +114,6 @@ public class RakNetSession implements Session {
 		this.state = state;
 	}
 
-	public ArrayList<SessionListener> getListeners() {
-		return listeners;
-	}
-
-	public void addListener(SessionListener listener) {
-		if(!listeners.contains(listener)) {
-			listeners.add(listener);
-		}
-	}
-
-	public void removeListener(SessionListener listener) {
-		listeners.remove(listener);
-	}
-
 	public ConcurrentLinkedQueue<EncapsulatedPacket> getPacketQueue() {
 		return packetQueue;
 	}
@@ -156,7 +141,6 @@ public class RakNetSession implements Session {
 		return System.currentTimeMillis() - this.lastReceivedTime >= TIMEOUT_TIME;
 	}
 
-	@Override
 	public void close(String reason) {
 		if(this.closed) {
 			return;
@@ -169,7 +153,6 @@ public class RakNetSession implements Session {
 		log.info("Closed session [{}] due to {}", getAddress(), reason);
 	}
 
-	@Override
 	public void close() {
 		this.close("Unknown");
 	}
@@ -192,17 +175,14 @@ public class RakNetSession implements Session {
 
 	}
 
-	@Override
 	public int getMaximumTransferUnits() {
 		return maximumTransferUnits;
 	}
 
-	@Override
 	public void setMaximumTransferUnits(int size) {
 		this.maximumTransferUnits = size;
 	}
 
-	@Override
 	public void tick() {
 		if(this.isClosed()) {
 			return;
@@ -237,7 +217,6 @@ public class RakNetSession implements Session {
 			AcknowledgePacket pk = AcknowledgePacket.createACK();
 			pk.records = this.ackQueue;
 			this.sendPacket(pk);
-			log.info("Sending ACK packet with records: {}", pk.records);
 			this.ackQueue.clear();
 		}
 
@@ -248,25 +227,28 @@ public class RakNetSession implements Session {
 		this.lastReceivedTime = System.currentTimeMillis();
 	}
 
-	@Override
 	public void handle(DataPacket packet) {
 		this.updateReceivedTime();
 		if(packet instanceof ConnectionRequestPacket) {
 			ConnectionRequestAcceptedPacket pk = new ConnectionRequestAcceptedPacket();
-			pk.address = this.getAddress();
+			pk.clientAddress = this.getAddress();
 			pk.sendPingTime = ((ConnectionRequestPacket) packet).sendPingTime;
 			pk.sendPongTime = this.getServer().getRakNetTimeMS();
 			this.sendEncapsulatedPacket(pk, PacketReliability.UNRELIABLE, PacketPriority.IMMEDIATE, 0);
-		} else if(packet instanceof DisconnectionNotificationPacket) {
-			this.close("client disconnect");
-		} else if(packet instanceof ConnectedPingPacket) {
-			log.info("Received ping & sending pong");
+			return;
+		}
+		if(packet instanceof DisconnectionNotificationPacket) {
+			return;
+		}
+		if(packet instanceof ConnectedPingPacket) {
 			ConnectedPongPacket pk = new ConnectedPongPacket();
 			pk.sendPingTime = ((ConnectedPingPacket) packet).pingTime;
 			pk.sendPongTime = this.getServer().getRakNetTimeMS();
 			this.sendEncapsulatedPacket(pk);
-		} else if(packet instanceof ConnectedPongPacket) {
-			log.info("Received pong packet");
+			return;
+		}
+		if(packet instanceof ConnectedPongPacket) {
+
 		}
 	}
 
@@ -285,8 +267,6 @@ public class RakNetSession implements Session {
 	}
 
 	public void handleACK(AcknowledgePacket packet) {
-		log.info("Received ACK");
-		log.info("ACK records: {}", packet.records);
 		this.updateReceivedTime();
 	}
 
@@ -294,18 +274,15 @@ public class RakNetSession implements Session {
 		this.updateReceivedTime();
 	}
 
-	@Override
 	public void sendPacket(DataPacket packet, PacketReliability reliability, boolean immediate) {
 		PacketEncoder encoder = new PacketEncoder();
 		this.getContext().writeAndFlush(new DatagramPacket(packet.write(encoder), this.getAddress()));
 	}
 
-	@Override
 	public void sendPacket(DataPacket packet, boolean immediate) {
 		sendPacket(packet, PacketReliability.UNRELIABLE, immediate);
 	}
 
-	@Override
 	public void sendPacket(DataPacket packet) {
 		sendPacket(packet, false);
 	}
@@ -315,13 +292,7 @@ public class RakNetSession implements Session {
 		encapsulated.reliability = reliability;
 		encapsulated.orderChannel = orderChannel;
 		encapsulated.buffer = packet.write(new PacketEncoder());
-		if(priority != PacketPriority.IMMEDIATE) {
-			this.packetQueue.add(encapsulated);
-		} else {
-			RakNetDatagram datagram = new RakNetDatagram();
-			datagram.packets.add(encapsulated);
-			this.sendDatagram(datagram);
-		}
+		this.packetQueue.add(encapsulated);
 	}
 
 	public void sendEncapsulatedPacket(DataPacket packet, PacketReliability reliability, PacketPriority priority) {
@@ -329,7 +300,7 @@ public class RakNetSession implements Session {
 	}
 
 	public void sendEncapsulatedPacket(DataPacket packet, PacketReliability reliability) {
-		sendEncapsulatedPacket(packet, reliability, PacketPriority.HIGH);
+		sendEncapsulatedPacket(packet, reliability, PacketPriority.IMMEDIATE);
 	}
 
 	public void sendEncapsulatedPacket(DataPacket packet) {
@@ -338,13 +309,15 @@ public class RakNetSession implements Session {
 
 	public void sendDatagram(RakNetDatagram datagram) {
 		datagram.sequenceNumber = this.sendSequenceNumber++;
-		this.getContext().writeAndFlush(new DatagramPacket(datagram.write(new PacketEncoder()), this.getAddress()));
+		ByteBuf buffer = datagram.write(new PacketEncoder());
+		this.getContext().writeAndFlush(new DatagramPacket(buffer, this.getAddress()));
 	}
 
 	public void sendQueue() {
 		if(this.packetQueue.size() > 0) {
 			RakNetDatagram datagram = new RakNetDatagram();
 			datagram.packets = new ArrayList<>(this.packetQueue);
+			this.sendDatagram(datagram);
 			this.packetQueue.clear();
 		}
 	}

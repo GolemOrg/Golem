@@ -20,7 +20,7 @@ public class UnconnectedPingHandler extends RakNetInboundPacketHandler<Unconnect
 		UnconnectedPingPacket ping = message.content();
 		UnconnectedPongPacket pong = new UnconnectedPongPacket();
 		pong.pingId = ping.pingId;
-		pong.guid = getRakNet().getGlobalUniqueId();
+		pong.guid = getRakNet().getGlobalUniqueId().getMostSignificantBits();
 		pong.serverName = getRakNet().getIdentifier().build();
 
 		this.sendPacket(context, pong, message.recipient());

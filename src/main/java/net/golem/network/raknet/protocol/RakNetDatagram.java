@@ -20,7 +20,7 @@ public class RakNetDatagram extends RakNetPacket {
 	public int sequenceNumber;
 
 	public RakNetDatagram() {
-		super(RakNetPacketIds.FRAME_SET);
+		super(BitFlags.VALID.getId());
 	}
 
 	@Override

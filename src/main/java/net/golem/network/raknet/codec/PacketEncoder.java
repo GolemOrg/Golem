@@ -3,6 +3,7 @@ package net.golem.network.raknet.codec;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import lombok.extern.log4j.Log4j2;
+import net.golem.network.raknet.BufferUtils;
 import net.golem.network.raknet.RakNetAddressUtils;
 import net.golem.network.raknet.protocol.RakNetPacket;
 
@@ -103,6 +104,11 @@ public class PacketEncoder {
 		buffer.writeBytes(bytes);
 	}
 
+	public void writeBytes(byte[] bytes) {
+		for(byte current : bytes) writeByte(current);
+	}
+
+
 	public void writeString(String string) {
 		buffer.writeShort(string.length());
 		buffer.writeCharSequence(string, StandardCharsets.UTF_8);
@@ -112,12 +118,12 @@ public class PacketEncoder {
 		buffer.writeBytes(RakNetPacket.MAGIC);
 	}
 
-	public void writeZeroes(int count) {
-
-	}
-
 	public void clear() {
 		buffer.clear();
+	}
+
+	public int writerIndex() {
+		return buffer.writerIndex();
 	}
 
 }

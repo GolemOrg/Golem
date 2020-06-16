@@ -36,4 +36,8 @@ public final class BufferUtils {
 		}
 		return builder.toString();
 	}
+
+	public static String dumpAndConvert(ByteBuf buf) {
+		return convert(dump(buf));
+	}
 }

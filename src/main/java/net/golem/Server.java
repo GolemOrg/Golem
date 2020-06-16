@@ -25,7 +25,6 @@ public class Server {
 	 */
 	public static final int PROTOCOL_VERSION = 390;
 
-
 	protected static int TICKS_PER_SECOND = 20;
 
 	private static final int SLEEP_TIME = 1000 / TICKS_PER_SECOND;
@@ -111,7 +110,6 @@ public class Server {
 
 	private void start() {
 		getLogger().info("Starting server...");
-		this.guid = UUID.randomUUID();
 		this.configuration = new ServerConfiguration("Golem", "1.14.60", 100, "World", "Survival", false,19132);
 		// initiate the registries & factories
 		this.commandRegistry = new CommandRegistry(this);
@@ -128,6 +126,7 @@ public class Server {
 			this.shutdown();
 			return;
 		}
+		this.guid = rakNet.getGlobalUniqueId();
 		getLogger().info("The server has started successfully!");
 		this.tickProcessor();
 	}

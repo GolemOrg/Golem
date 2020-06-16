@@ -68,44 +68,28 @@ public class EncapsulatedPacket {
 	}
 
 	public void encode(PacketEncoder encoder) {
-		int flags = reliability.getId() << 5;
-		if(this.splitInfo != null) {
-			flags |= SPLIT_FLAG;
-		}
-		encoder.writeByte((byte) flags);
-		encoder.writeShort((short) (encoder.getBuffer().writerIndex() * 8));
-		log.info("[ENCAPSULATED] Writing flags: {}", flags);
-
-		log.info("[ENCAPSULATED] Writing writer index short: {}", encoder.getBuffer().writerIndex() * 8);
+		encoder.writeByte((byte) (reliability.getId() << 5));
+		encoder.writeShort((short) (buffer.writerIndex() << 3));
 
 		if(reliability.isReliable()) {
-			encoder.getBuffer().writeMediumLE(messageIndex);
-			log.info("[RELIABLE] Writing message index: {}", messageIndex);
+			encoder.writeMediumLE(messageIndex);
 		}
 
 		if(reliability.isSequenced()) {
-			encoder.getBuffer().writeMediumLE(this.sequenceIndex);
-			log.info("[RELIABLE] Writing sequence index: {}", sequenceIndex);
-		}
-		if(reliability.isSequenced() || reliability.isOrdered()) {
-			encoder.getBuffer().writeMediumLE(orderIndex);
-			encoder.getBuffer().writeByte(orderChannel);
-			log.info("[RELIABLE] Writing order index: {}", orderIndex);
-			log.info("[RELIABLE] Writing order channel: {}", orderChannel);
-
+			encoder.writeMediumLE(sequenceIndex);
 		}
 
-		if(this.splitInfo != null) {
-			encoder.writeInt(splitInfo.splitCount);
-			encoder.writeShort((short) (splitInfo.splitId & 0xFFFF));
-			encoder.writeInt(splitInfo.splitIndex);
-			log.info("[RELIABLE] Writing split info: {}", splitInfo);
+		if(reliability.isOrdered()) {
+			encoder.writeMediumLE(orderIndex);
+			encoder.writeByte((byte) orderChannel);
 		}
 
-		encoder.writeBytes(buffer);
-		log.info("[ENCAPSULATED] Writing buffer: {}", buffer);
-
-		buffer.release();
+		if(splitInfo != null) {
+			encoder.writeInt(splitInfo.getSplitCount());
+			encoder.writeShort((short) splitInfo.getSplitId());
+			encoder.writeInt(splitInfo.getSplitIndex());
+		}
+		encoder.getBuffer().writeBytes(buffer);
 	}
 
 

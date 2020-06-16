@@ -12,13 +12,13 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class SessionManager extends RakNetInboundPacketHandler<DataPacket> {
 
-	private ConcurrentHashMap<InetSocketAddress, Session> sessions = new ConcurrentHashMap<>();
+	private ConcurrentHashMap<InetSocketAddress, RakNetSession> sessions = new ConcurrentHashMap<>();
 
 	public SessionManager(RakNetServer server) {
 		super(server, RakNetPacket.class);
 	}
 
-	public ConcurrentHashMap<InetSocketAddress, Session> getSessions() {
+	public ConcurrentHashMap<InetSocketAddress, RakNetSession> getSessions() {
 		return sessions;
 	}
 
@@ -26,11 +26,11 @@ public class SessionManager extends RakNetInboundPacketHandler<DataPacket> {
 		return sessions.containsKey(address);
 	}
 
-	public Session get(InetSocketAddress address) {
+	public RakNetSession get(InetSocketAddress address) {
 		return this.get(address, true);
 	}
 
-	public Session get(InetSocketAddress address, boolean create) {
+	public RakNetSession get(InetSocketAddress address, boolean create) {
 		if(!this.contains(address) && create) {
 			try {
 				this.create(address);
@@ -41,7 +41,7 @@ public class SessionManager extends RakNetInboundPacketHandler<DataPacket> {
 		return this.contains(address) ? sessions.get(address) : null;
 	}
 
-	public Session create(InetSocketAddress socketAddress) throws SessionException {
+	public RakNetSession create(InetSocketAddress socketAddress) throws SessionException {
 		if(this.contains(socketAddress)) {
 			throw new SessionException("Session already exists!");
 		}
@@ -60,12 +60,12 @@ public class SessionManager extends RakNetInboundPacketHandler<DataPacket> {
 	protected void handlePacket(ChannelHandlerContext context, RakNetAddressedEnvelope<DataPacket> message) {
 		DataPacket packet = message.content();
 		InetSocketAddress sender = message.sender();
-		Session session;
+		RakNetSession session;
 
 	}
 
 	public void closeAll() {
-		for(Session session : getSessions().values()) {
+		for(RakNetSession session : getSessions().values()) {
 			session.close();
 		}
 	}

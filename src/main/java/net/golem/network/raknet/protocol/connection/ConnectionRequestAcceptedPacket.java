@@ -1,6 +1,7 @@
 package net.golem.network.raknet.protocol.connection;
 
 import lombok.extern.log4j.Log4j2;
+import net.golem.network.raknet.RakNetAddressUtils;
 import net.golem.network.raknet.codec.PacketDecoder;
 import net.golem.network.raknet.codec.PacketEncoder;
 import net.golem.network.raknet.protocol.RakNetPacket;
@@ -12,7 +13,7 @@ import java.net.InetSocketAddress;
 @Log4j2
 public class ConnectionRequestAcceptedPacket extends RakNetPacket {
 
-	public InetSocketAddress address;
+	public InetSocketAddress clientAddress;
 
 	public InetSocketAddress[] addresses = new InetSocketAddress[AddressCount.MINECRAFT.getCount()];
 
@@ -26,12 +27,11 @@ public class ConnectionRequestAcceptedPacket extends RakNetPacket {
 
 	@Override
 	public void decode(PacketDecoder decoder) {
-		address = decoder.readAddress();
-		decoder.readShort(); //what is this short?
+		clientAddress = decoder.readAddress();
+		decoder.readShort(); // system index? no one knows what these *actually* do though
 		int length = decoder.length();
-		InetSocketAddress dummy = new InetSocketAddress("0.0.0.0", 0);
 		for(int i = 0; i < AddressCount.MINECRAFT.getCount(); ++i) {
-			this.addresses[i] = decoder.getBuffer().readerIndex() + 16 < length ? decoder.readAddress() : dummy;
+			this.addresses[i] = decoder.getBuffer().readerIndex() + 16 < length ? decoder.readAddress() : RakNetAddressUtils.SYSTEM_ADDRESS;
 		}
 
 		this.sendPingTime = decoder.readLong();
@@ -40,11 +40,11 @@ public class ConnectionRequestAcceptedPacket extends RakNetPacket {
 
 	@Override
 	public void encode(PacketEncoder encoder) {
-		encoder.writeAddress(address);
+		encoder.writeAddress(clientAddress);
 		encoder.writeShort((short) 0);
-		InetSocketAddress dummy = new InetSocketAddress("0.0.0.0", 0);
-		for (InetSocketAddress inetSocketAddress : addresses) {
-			encoder.writeAddress(inetSocketAddress != null ? inetSocketAddress : dummy);
+		for (InetSocketAddress address : addresses) {
+			InetSocketAddress currentAddress = address != null ? address : RakNetAddressUtils.SYSTEM_ADDRESS;
+			encoder.writeAddress(currentAddress);
 		}
 		encoder.writeLong(sendPingTime);
 		encoder.writeLong(sendPongTime);

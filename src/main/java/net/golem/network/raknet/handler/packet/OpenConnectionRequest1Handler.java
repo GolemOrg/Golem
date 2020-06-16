@@ -22,7 +22,7 @@ public class OpenConnectionRequest1Handler extends RakNetInboundPacketHandler<Op
 		OpenConnectionRequest1Packet request = message.content();
 		if(request.networkProtocol != RakNetServer.PROTOCOL_VERSION) {
 			IncompatibleProtocolPacket incompatible = new IncompatibleProtocolPacket();
-			incompatible.guid = getRakNet().getGlobalUniqueId();
+			incompatible.guid = getRakNet().getGlobalUniqueId().getMostSignificantBits();
 			incompatible.protocolVersion = RakNetServer.PROTOCOL_VERSION;
 			this.sendPacket(context, incompatible, message.recipient());
 			log.info(String.format("Connection refused from [%s]: Incompatible RakNet protocol version: %s. Expected: %s", message.recipient(), request.networkProtocol, RakNetServer.PROTOCOL_VERSION));
@@ -30,7 +30,7 @@ public class OpenConnectionRequest1Handler extends RakNetInboundPacketHandler<Op
 		}
 		OpenConnectionReply1Packet response = new OpenConnectionReply1Packet();
 		response.maximumTransferUnits = request.maximumTransferUnits;
-		response.guid = getRakNet().getGlobalUniqueId();
+		response.guid = getRakNet().getGlobalUniqueId().getMostSignificantBits();
 		this.sendPacket(context, response, message.recipient());
 	}
 }

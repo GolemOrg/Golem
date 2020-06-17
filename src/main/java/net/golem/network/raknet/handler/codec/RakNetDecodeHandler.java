@@ -39,9 +39,9 @@ public class RakNetDecodeHandler extends MessageToMessageDecoder<DatagramPacket>
 			log.info((String.format("Buffer length: %s", ((RawRakNetPacket) packet).buffer.readableBytes())));
 		}
 		if(this.getRakNet().getSessionManager().contains(incoming.sender())) {
-			RakNetSession session = (RakNetSession) this.getRakNet().getSessionManager().get(incoming.sender());
+			RakNetSession session = this.getRakNet().getSessionManager().get(incoming.sender());
 			if(packet instanceof RakNetDatagram) {
-				session.handleDatagram((RakNetDatagram) packet);
+				session.getDecodeLayer().handleDatagram((RakNetDatagram) packet);
 			} else if(packet instanceof AcknowledgePacket) {
 				if(((AcknowledgePacket) packet).isACK()) {
 					session.handleACK((AcknowledgePacket) packet);

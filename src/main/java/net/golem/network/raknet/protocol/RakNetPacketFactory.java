@@ -2,6 +2,8 @@ package net.golem.network.raknet.protocol;
 
 import io.netty.buffer.ByteBuf;
 import lombok.extern.log4j.Log4j2;
+import net.golem.network.GamePacketIds;
+import net.golem.network.protocol.PacketBatch;
 import net.golem.network.raknet.DataPacket;
 import net.golem.network.raknet.codec.PacketDecoder;
 import net.golem.network.raknet.protocol.connection.ConnectionRequestPacket;
@@ -54,6 +56,7 @@ public class RakNetPacketFactory {
 					break;
 				case RakNetPacketIds.CONNECTED_PING:
 					packet = new ConnectedPingPacket();
+					break;
 			}
 		}
 		if(packet == null) {

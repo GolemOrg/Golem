@@ -5,6 +5,7 @@ import lombok.extern.log4j.Log4j2;
 import net.golem.block.BlockFactory;
 import net.golem.command.CommandRegistry;
 import net.golem.item.ItemFactory;
+import net.golem.network.Network;
 import net.golem.network.ServerIdentifier;
 import net.golem.network.raknet.RakNetServer;
 import net.golem.network.raknet.identifier.Identifier;
@@ -37,7 +38,7 @@ public class Server {
 
 	private static Server instance;
 
-	private RakNetServer rakNet;
+	private Network network;
 
 	private Identifier identifier;
 
@@ -120,13 +121,13 @@ public class Server {
 		this.worldManager = new WorldManager(this);
 		this.identifier = new ServerIdentifier(this);
 		try {
-			this.rakNet = new RakNetServer("0.0.0.0", getConfiguration().getPort(), identifier);
+			network = new Network(this);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 			this.shutdown();
 			return;
 		}
-		this.guid = rakNet.getGlobalUniqueId();
+		this.guid = network.getRakNetServer().getGlobalUniqueId();
 		getLogger().info("The server has started successfully!");
 		this.tickProcessor();
 	}
@@ -141,7 +142,7 @@ public class Server {
 	}
 
 	public void shutdown() {
-		rakNet.shutdown();
+		network.getRakNetServer().shutdown();
 	}
 
 	public boolean tick() {

@@ -1,5 +1,6 @@
 package net.golem.player;
 
+import net.golem.network.GameSession;
 import net.golem.network.raknet.session.RakNetSession;
 
 import java.util.UUID;
@@ -8,13 +9,13 @@ public class Player {
 
 	private String username, displayName;
 
-	private RakNetSession session;
+	private GameSession session;
 
 	private UUID uuid;
 
 	private boolean connected, loggedIn = false;
 
-	public Player(String username, RakNetSession session, UUID uuid) {
+	public Player(String username, GameSession session, UUID uuid) {
 		this.username = username;
 		this.session = session;
 		this.uuid = uuid;
@@ -32,7 +33,7 @@ public class Player {
 		this.displayName = displayName;
 	}
 
-	public RakNetSession getSession() {
+	public GameSession getSession() {
 		return session;
 	}
 

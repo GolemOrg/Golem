@@ -7,6 +7,7 @@ import net.golem.network.raknet.RakNetServer;
 import net.golem.network.raknet.handler.RakNetInboundPacketHandler;
 import net.golem.network.raknet.protocol.connection.reply.OpenConnectionReply2Packet;
 import net.golem.network.raknet.protocol.connection.request.OpenConnectionRequest2Packet;
+import net.golem.network.raknet.session.RakNetSession;
 import net.golem.network.raknet.session.SessionException;
 
 @Log4j2
@@ -29,7 +30,8 @@ public class OpenConnectionRequest2Handler extends RakNetInboundPacketHandler<Op
 
 		this.sendPacket(context, response, message.recipient());
 		try {
-			this.getRakNet().getSessionManager().create(message.recipient());
+			RakNetSession session = this.getRakNet().getSessionManager().create(message.recipient());
+			session.setMaximumTransferUnits(request.maximumTransferUnits);
 		} catch (SessionException e) {
 			e.printStackTrace();
 		}

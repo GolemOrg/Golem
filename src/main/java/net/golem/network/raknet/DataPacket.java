@@ -26,13 +26,21 @@ public abstract class DataPacket {
 		return this.id;
 	}
 
+	public void encodeHeader(PacketEncoder encoder) {
+		encoder.writeByte((byte) getId());
+	}
+
 	public abstract void encode(PacketEncoder encoder);
+
+	public void decodeHeader(PacketDecoder decoder) {
+		this.id = decoder.readByte();
+	}
 
 	public abstract void decode(PacketDecoder decoder);
 
 	public ByteBuf write(PacketEncoder encoder) {
-		encoder.writeByte((byte) getId());
-		this.encode(encoder);
+		encodeHeader(encoder);
+		encode(encoder);
 		return encoder.getBuffer();
 	}
 

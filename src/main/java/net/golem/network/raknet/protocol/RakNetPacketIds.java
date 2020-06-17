@@ -30,5 +30,4 @@ public final class RakNetPacketIds {
 	public static final int FRAME_SET = BitFlags.VALID.getId() | BitFlags.NEEDS_B_AND_AS.getId();
 
 
-
 }

@@ -2,6 +2,7 @@ package net.golem.network.raknet.codec;
 
 import io.netty.buffer.ByteBuf;
 import lombok.extern.log4j.Log4j2;
+import net.golem.network.raknet.BufferUtils;
 import net.golem.network.raknet.RakNetAddressUtils;
 import net.golem.network.raknet.protocol.RakNetPacket;
 
@@ -83,6 +84,10 @@ public class PacketDecoder {
 		return buffer.readInt();
 	}
 
+	public int readIntLE() {
+		return buffer.readIntLE();
+	}
+
 	public int readUnsignedInt() {
 		return (int) buffer.readUnsignedInt();
 	}
@@ -123,6 +128,10 @@ public class PacketDecoder {
 		return getBuffer().readBytes(length);
 	}
 
+	public byte[] readByteArray() {
+		return BufferUtils.dump(buffer.readBytes(this.readUnsignedVarInt()));
+	}
+
 	public ByteBuf readSlice(int length) {
 		return buffer.readSlice(length).copy();
 	}
@@ -148,8 +157,21 @@ public class PacketDecoder {
 	}
 
 	public String readString() {
-		short length = buffer.readShort();
+		int length = this.readUnsignedVarInt();
 		return (String) buffer.readCharSequence(length, StandardCharsets.UTF_8);
+	}
+
+	public int readUnsignedVarInt() {
+		int value = 0;
+		int size = 0;
+		int b;
+		while (((b = buffer.readByte()) & 0x80) == 0x80) {
+			value |= (b & 0x7F) << (size++ * 7);
+			if (size >= 5) {
+				throw new IllegalArgumentException("VarInt too big");
+			}
+		}
+		return value | ((b & 0x7F) << (size * 7));
 	}
 
 }

@@ -51,20 +51,24 @@ public class AcknowledgePacket extends SessionPacket {
 	@Override
 	public void encode(PacketEncoder encoder) {
 		ByteBuf buffer = Unpooled.buffer();
-		int recordCount = 0;
-		if(records.size() > 0) {
-			PeekingIterator<Integer> iterator = Iterators.peekingIterator(records.iterator());
-			while(iterator.hasNext()) {
-				int current = iterator.next();
-				boolean single = !iterator.hasNext() || (iterator.peek() - current == 1);
-				buffer.writeByte(single ? RECORD_TYPE_SINGLE : RECORD_TYPE_RANGE);
-				buffer.writeMediumLE(current);
-				if(!single) buffer.writeMediumLE(iterator.next());
-				++recordCount;
+		try {
+			int recordCount = 0;
+			if (records.size() > 0) {
+				PeekingIterator<Integer> iterator = Iterators.peekingIterator(records.iterator());
+				while (iterator.hasNext()) {
+					int current = iterator.next();
+					boolean single = !iterator.hasNext() || (iterator.peek() - current == 1);
+					buffer.writeByte(single ? RECORD_TYPE_SINGLE : RECORD_TYPE_RANGE);
+					buffer.writeMediumLE(current);
+					if (!single) buffer.writeMediumLE(iterator.next());
+					++recordCount;
+				}
 			}
+			encoder.writeShort((short) recordCount);
+			encoder.writeBytes(buffer);
+		} finally {
+			buffer.release();
 		}
-		encoder.writeShort((short) recordCount);
-		encoder.writeBytes(buffer);
 	}
 
 	public boolean isACK() {

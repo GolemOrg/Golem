@@ -7,8 +7,7 @@ import net.golem.command.CommandRegistry;
 import net.golem.item.ItemFactory;
 import net.golem.network.Network;
 import net.golem.network.ServerIdentifier;
-import net.golem.network.raknet.RakNetServer;
-import net.golem.network.raknet.identifier.Identifier;
+import net.golem.raknet.Identifier;
 import net.golem.player.PlayerManager;
 import net.golem.terminal.ServerConsole;
 import net.golem.world.WorldManager;
@@ -120,13 +119,7 @@ public class Server {
 		this.playerManager = new PlayerManager(this);
 		this.worldManager = new WorldManager(this);
 		this.identifier = new ServerIdentifier(this);
-		try {
-			network = new Network(this);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-			this.shutdown();
-			return;
-		}
+		network = new Network(this);
 		this.guid = network.getRakNetServer().getGlobalUniqueId();
 		getLogger().info("The server has started successfully!");
 		this.tickProcessor();

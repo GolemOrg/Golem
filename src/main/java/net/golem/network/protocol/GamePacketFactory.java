@@ -2,8 +2,8 @@ package net.golem.network.protocol;
 
 import io.netty.buffer.ByteBuf;
 import net.golem.network.GamePacketIds;
-import net.golem.network.raknet.DataPacket;
-import net.golem.network.raknet.codec.PacketDecoder;
+import net.golem.raknet.protocol.DataPacket;
+import net.golem.raknet.codec.PacketDecoder;
 
 import java.util.LinkedHashMap;
 

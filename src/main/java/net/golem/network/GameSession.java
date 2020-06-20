@@ -4,35 +4,47 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.log4j.Log4j2;
 import net.golem.network.protocol.GamePacketFactory;
-import net.golem.network.raknet.DataPacket;
-import net.golem.network.raknet.RakNetServer;
-import net.golem.network.raknet.protocol.RawRakNetPacket;
-import net.golem.network.raknet.session.RakNetSession;
-import net.golem.network.raknet.session.SessionManager;
+import net.golem.network.protocol.PacketBatch;
+import net.golem.raknet.protocol.DataPacket;
+import net.golem.raknet.RakNetServer;
+import net.golem.raknet.protocol.RawPacket;
+import net.golem.raknet.session.RakNetSession;
+import net.golem.raknet.session.SessionManager;
 
 import java.net.InetSocketAddress;
 
 @Log4j2
 public class GameSession extends RakNetSession {
 
-	public GameSession(RakNetServer server, SessionManager handler, InetSocketAddress address, ChannelHandlerContext context) {
-		super(server, handler, address, context);
+	public GameSession(RakNetServer server, SessionManager handler, ChannelHandlerContext context, InetSocketAddress address) {
+		super(server, handler, context, address);
+		log.info("Session created: [{}]", address);
+	}
+
+	@Override
+	public void close(String reason) {
+		super.close(reason);
+		log.info("Closing session [{}] due to {}", getAddress(), reason);
 	}
 
 	@Override
 	public void handle(DataPacket packet) {
-		if(!(packet instanceof RawRakNetPacket)) {
-			super.handle(packet);
-			return;
-		}
-		ByteBuf buffer = ((RawRakNetPacket) packet).buffer.copy();
+		ByteBuf buffer = ((RawPacket) packet).buffer.copy();
 		DataPacket pk = GamePacketFactory.from(buffer);
+		log.info("Packet: {}", pk);
 		if(pk != null) {
-			this.handleGamePacket(pk);
+			if(pk instanceof PacketBatch) {
+				handlePacketBatch((PacketBatch) pk);
+			} else {
+				handleGamePacket(pk);
+			}
 		}
 	}
 
-	public void handleGamePacket(DataPacket packet) {
+	public void handlePacketBatch(PacketBatch packetBatch) {
 
+	}
+
+	public void handleGamePacket(DataPacket packet) {
 	}
 }

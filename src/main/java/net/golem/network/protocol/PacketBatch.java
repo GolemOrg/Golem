@@ -6,9 +6,9 @@ import io.netty.buffer.ByteBufInputStream;
 import io.netty.buffer.Unpooled;
 import lombok.extern.log4j.Log4j2;
 import net.golem.network.GamePacketIds;
-import net.golem.network.raknet.DataPacket;
-import net.golem.network.raknet.codec.PacketDecoder;
-import net.golem.network.raknet.codec.PacketEncoder;
+import net.golem.raknet.protocol.DataPacket;
+import net.golem.raknet.codec.PacketDecoder;
+import net.golem.raknet.codec.PacketEncoder;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -43,6 +43,7 @@ public class PacketBatch extends DataPacket {
 
 	@Override
 	public void decode(PacketDecoder decoder) {
+		log.info("Decoding packet batch");
 		packets.clear();
 		InflaterInputStream inflater = new InflaterInputStream(new ByteBufInputStream(decoder.getBuffer()));
 		try {

@@ -4,11 +4,9 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import lombok.extern.log4j.Log4j2;
 import net.golem.network.GamePacketIds;
-import net.golem.network.raknet.DataPacket;
-import net.golem.network.raknet.codec.PacketDecoder;
-import net.golem.network.raknet.codec.PacketEncoder;
-
-import java.util.Map;
+import net.golem.raknet.protocol.DataPacket;
+import net.golem.raknet.codec.PacketDecoder;
+import net.golem.raknet.codec.PacketEncoder;
 
 @Log4j2
 public class LoginPacket extends DataPacket {

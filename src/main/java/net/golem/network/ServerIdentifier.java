@@ -1,7 +1,7 @@
 package net.golem.network;
 
 import net.golem.Server;
-import net.golem.network.raknet.identifier.Identifier;
+import net.golem.raknet.Identifier;
 
 import java.util.ArrayList;
 import java.util.Arrays;

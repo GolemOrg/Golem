@@ -1,7 +1,6 @@
 package net.golem.player;
 
 import net.golem.network.GameSession;
-import net.golem.network.raknet.session.RakNetSession;
 
 import java.util.UUID;
 

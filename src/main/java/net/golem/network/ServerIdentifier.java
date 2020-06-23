@@ -23,7 +23,7 @@ public class ServerIdentifier extends Identifier {
 		return new ArrayList<>(Arrays.asList(
 				getServer().getConfiguration().getName(),
 				Server.PROTOCOL_VERSION,
-				getServer().getConfiguration().getVersion(),
+				Server.NETWORK_VERSION,
 				getServer().getPlayerManager().getOnlinePlayers().size(),
 				getServer().getConfiguration().getMaxPlayerCount(),
 				getServer().getGlobalUniqueId().getMostSignificantBits(),

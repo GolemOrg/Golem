@@ -15,7 +15,9 @@ import net.golem.raknet.utils.ByteBufUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
+import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 
 @Log4j2
@@ -29,19 +31,19 @@ public class PacketBatch extends DataPacket {
 
 	@Override
 	public void encode(PacketEncoder encoder) {
-		DeflaterOutputStream deflater = new DeflaterOutputStream(new ByteBufOutputStream(encoder.getBuffer()));
+		DeflaterOutputStream deflaterStream = new DeflaterOutputStream(new ByteBufOutputStream(encoder.getBuffer()), new Deflater(Deflater.DEFLATED, true));
 		try {
 			packets.forEach(packet -> {
 				ByteBuf buffer = packet.create();
 				try {
-					deflater.write(writeUnsignedVarInt(buffer.readableBytes()));
-					deflater.write(ByteBufUtils.array(buffer));
+					deflaterStream.write(writeUnsignedVarInt(buffer.readableBytes()));
+					deflaterStream.write(ByteBufUtils.array(buffer));
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
 			});
-			deflater.flush();
-			deflater.close();
+			deflaterStream.flush();
+			deflaterStream.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -50,7 +52,7 @@ public class PacketBatch extends DataPacket {
 	@Override
 	public void decode(PacketDecoder decoder) {
 		packets.clear();
-		InflaterInputStream inflater = new InflaterInputStream(new ByteBufInputStream(decoder.getBuffer()));
+		InflaterInputStream inflater = new InflaterInputStream(new ByteBufInputStream(decoder.getBuffer()), new Inflater(true));
 		try {
 			ByteBuf buffer = Unpooled.wrappedBuffer(ByteStreams.toByteArray(inflater));
 			while(buffer.isReadable()) {

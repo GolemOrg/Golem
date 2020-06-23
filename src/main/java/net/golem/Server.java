@@ -23,7 +23,9 @@ public class Server {
 	/**
 	 * TODO: Move this stuff
 	 */
-	public static final int PROTOCOL_VERSION = 390;
+	public static final int PROTOCOL_VERSION = 407;
+
+	public static final String NETWORK_VERSION = "1.16.0";
 
 	protected static int TICKS_PER_SECOND = 20;
 

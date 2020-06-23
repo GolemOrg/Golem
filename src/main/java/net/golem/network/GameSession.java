@@ -2,10 +2,7 @@ package net.golem.network;
 
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.log4j.Log4j2;
-import net.golem.network.protocol.GamePacketFactory;
-import net.golem.network.protocol.LoginPacket;
-import net.golem.network.protocol.PacketBatch;
-import net.golem.network.protocol.PlayStatusPacket;
+import net.golem.network.protocol.*;
 import net.golem.network.types.PlayStatus;
 import net.golem.raknet.enums.PacketReliability;
 import net.golem.raknet.protocol.DataPacket;
@@ -15,6 +12,9 @@ import net.golem.raknet.session.RakNetSession;
 import net.golem.raknet.session.SessionManager;
 
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Log4j2
 public class GameSession extends RakNetSession {
@@ -50,8 +50,10 @@ public class GameSession extends RakNetSession {
 		if(packet instanceof LoginPacket) {
 			PlayStatusPacket pk = new PlayStatusPacket();
 			pk.status = PlayStatus.LOGIN_SUCCESS;
-			sendPacket(pk, true);
-			log.info("Sending play status");
+			ResourcePacksInfoPacket infoPk = new ResourcePacksInfoPacket();
+			sendPackets(Stream.of(pk, infoPk).collect(Collectors.toCollection(ArrayList::new)), true);
+
+
 		}
 	}
 
@@ -66,6 +68,14 @@ public class GameSession extends RakNetSession {
 			sendPacketBatch(batch);
 		} else {
 
+		}
+	}
+
+	public void sendPackets(ArrayList<DataPacket> packets, boolean immediate) {
+		if(immediate) {
+			PacketBatch batch = new PacketBatch();
+			batch.packets = packets;
+			sendPacketBatch(batch);
 		}
 	}
 }

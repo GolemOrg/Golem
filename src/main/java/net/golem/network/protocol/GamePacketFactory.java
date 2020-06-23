@@ -17,7 +17,7 @@ public class GamePacketFactory {
 	public static DataPacket from(ByteBuf buffer) {
 		try {
 			PacketDecoder decoder = new PacketDecoder(buffer);
-			int packetId = decoder.readUnsignedByte();
+			int packetId = decoder.readUnsignedVarInt();
 			Class<? extends DataPacket> packetClass = packets.get(packetId);
 			if(packetClass != null) {
 				DataPacket packet = packetClass.newInstance();
@@ -31,16 +31,11 @@ public class GamePacketFactory {
 	}
 
 	public static DataPacket readRaw(RawPacket raw) {
-		try {
+		if(raw.getPacketId() == GamePacketIds.PACKET_BATCH) {
 			PacketDecoder decoder = new PacketDecoder(raw.buffer);
-			Class<? extends DataPacket> packetClass = packets.get(raw.getPacketId());
-			if(packetClass != null) {
-				DataPacket packet = packetClass.newInstance();
-				packet.decode(decoder);
-				return packet;
-			}
-		} catch (InstantiationException | IllegalAccessException e) {
-			e.printStackTrace();
+			PacketBatch batch = new PacketBatch();
+			batch.decode(decoder);
+			return batch;
 		}
 		return null;
 	}

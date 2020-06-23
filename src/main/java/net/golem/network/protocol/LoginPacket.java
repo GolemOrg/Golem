@@ -1,7 +1,5 @@
 package net.golem.network.protocol;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import lombok.extern.log4j.Log4j2;
 import net.golem.network.GamePacketIds;
 import net.golem.raknet.protocol.DataPacket;

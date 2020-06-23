@@ -9,7 +9,7 @@ public class Network {
 	private RakNetServer rakNetServer;
 
 	public Network(Server server) {
-		rakNetServer = new RakNetServer("0.0.0.0", server.getConfiguration().getPort(), server.getIdentifier());
+		rakNetServer = new RakNetServer("0.0.0.0", server.getConfiguration().getPort(), new ServerListener(), server.getIdentifier());
 		GamePacketFactory.register();
 		rakNetServer.getSessionManager().setSessionInterface(GameSession.class);
 	}

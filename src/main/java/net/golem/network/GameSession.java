@@ -5,6 +5,7 @@ import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.log4j.Log4j2;
 import net.golem.network.protocol.GamePacketFactory;
 import net.golem.network.protocol.PacketBatch;
+import net.golem.raknet.codec.PacketDecoder;
 import net.golem.raknet.protocol.DataPacket;
 import net.golem.raknet.RakNetServer;
 import net.golem.raknet.protocol.RawPacket;
@@ -29,22 +30,28 @@ public class GameSession extends RakNetSession {
 
 	@Override
 	public void handle(DataPacket packet) {
-		ByteBuf buffer = ((RawPacket) packet).buffer.copy();
-		DataPacket pk = GamePacketFactory.from(buffer);
-		log.info("Packet: {}", pk);
-		if(pk != null) {
+		if(packet instanceof RawPacket) {
+			DataPacket pk = GamePacketFactory.readRaw((RawPacket) packet);
+			log.info("Packet ID: {}", packet.getPacketId());
 			if(pk instanceof PacketBatch) {
 				handlePacketBatch((PacketBatch) pk);
 			} else {
-				handleGamePacket(pk);
+				if(pk == null) {
+					return;
+				}
+				handlePacket(pk);
 			}
+		} else {
+			log.info("Packet: {}", packet.getClass().getSimpleName());
 		}
 	}
 
-	public void handlePacketBatch(PacketBatch packetBatch) {
-
+	public void handlePacketBatch(PacketBatch batch) {
+		log.info("Handling packet batch...");
 	}
 
-	public void handleGamePacket(DataPacket packet) {
+	public void handlePacket(DataPacket packet) {
+		log.info("Handling game packet: ");
+		log.info("Packet: {}", packet.getClass().getSimpleName());
 	}
 }

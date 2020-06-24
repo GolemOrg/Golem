@@ -1,12 +1,12 @@
 package net.golem.network.protocol;
 
 import net.golem.network.GamePacketIds;
+import net.golem.network.session.GameSessionAdapter;
 import net.golem.network.types.PlayStatus;
 import net.golem.raknet.codec.PacketDecoder;
 import net.golem.raknet.codec.PacketEncoder;
-import net.golem.raknet.protocol.DataPacket;
 
-public class PlayStatusPacket extends DataPacket {
+public class PlayStatusPacket extends GamePacket {
 
 	public PlayStatus status;
 
@@ -22,5 +22,10 @@ public class PlayStatusPacket extends DataPacket {
 	@Override
 	public void decode(PacketDecoder decoder) {
 
+	}
+
+	@Override
+	public boolean handle(GameSessionAdapter adapter) {
+		return adapter.handle(this);
 	}
 }

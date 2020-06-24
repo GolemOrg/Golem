@@ -17,4 +17,8 @@ public class Vector3f extends Vector2f {
 	public float getZ() {
 		return z;
 	}
+
+	public int getFloorZ() {
+		return (int) Math.floor(z);
+	}
 }

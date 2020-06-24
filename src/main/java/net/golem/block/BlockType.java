@@ -1,5 +1,8 @@
 package net.golem.block;
 
+import lombok.ToString;
+
+@ToString
 public class BlockType {
 
 	private int id;
@@ -19,8 +22,4 @@ public class BlockType {
 		return meta;
 	}
 
-	@Override
-	public String toString() {
-		return "BlockType{" + "id=" + id + ", meta=" + meta + '}';
-	}
 }

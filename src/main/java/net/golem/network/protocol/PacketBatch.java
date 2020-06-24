@@ -8,6 +8,7 @@ import io.netty.buffer.ByteBufOutputStream;
 import io.netty.buffer.Unpooled;
 import lombok.extern.log4j.Log4j2;
 import net.golem.network.GamePacketIds;
+import net.golem.network.NetworkLayer;
 import net.golem.raknet.protocol.DataPacket;
 import net.golem.raknet.codec.PacketDecoder;
 import net.golem.raknet.codec.PacketEncoder;
@@ -31,7 +32,7 @@ public class PacketBatch extends DataPacket {
 
 	@Override
 	public void encode(PacketEncoder encoder) {
-		DeflaterOutputStream deflaterStream = new DeflaterOutputStream(new ByteBufOutputStream(encoder.getBuffer()), new Deflater(Deflater.DEFLATED, true));
+		DeflaterOutputStream deflaterStream = new DeflaterOutputStream(new ByteBufOutputStream(encoder.getBuffer()), new Deflater(NetworkLayer.getCompressionLevel(), true));
 		try {
 			packets.forEach(packet -> {
 				ByteBuf buffer = packet.create();

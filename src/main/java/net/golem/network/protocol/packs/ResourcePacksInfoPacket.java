@@ -1,6 +1,8 @@
-package net.golem.network.protocol;
+package net.golem.network.protocol.packs;
 
 import net.golem.network.GamePacketIds;
+import net.golem.network.protocol.GamePacket;
+import net.golem.network.session.GameSessionAdapter;
 import net.golem.packs.ResourcePack;
 import net.golem.raknet.codec.PacketDecoder;
 import net.golem.raknet.codec.PacketEncoder;
@@ -8,7 +10,7 @@ import net.golem.raknet.protocol.DataPacket;
 
 import java.util.ArrayList;
 
-public class ResourcePacksInfoPacket extends DataPacket {
+public class ResourcePacksInfoPacket extends GamePacket {
 
 	public boolean forced = false;
 	public boolean scriptingEnabled = false;
@@ -39,5 +41,14 @@ public class ResourcePacksInfoPacket extends DataPacket {
 		encoder.writeString(pack.getId());
 		encoder.writeString(pack.getVersion());
 		encoder.writeLongLE(pack.getSize());
+		encoder.writeString(""); // encryption key
+		encoder.writeString(""); // subpack name
+		encoder.writeString(""); // content identity
+		encoder.writeBoolean(false); // scripts?
+	}
+
+	@Override
+	public boolean handle(GameSessionAdapter adapter) {
+		return adapter.handle(this);
 	}
 }

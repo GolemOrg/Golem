@@ -5,7 +5,7 @@ import lombok.extern.log4j.Log4j2;
 import net.golem.block.BlockFactory;
 import net.golem.command.CommandRegistry;
 import net.golem.item.ItemFactory;
-import net.golem.network.Network;
+import net.golem.network.NetworkLayer;
 import net.golem.network.ServerIdentifier;
 import net.golem.raknet.Identifier;
 import net.golem.player.PlayerManager;
@@ -39,7 +39,7 @@ public class Server {
 
 	private static Server instance;
 
-	private Network network;
+	private NetworkLayer network;
 
 	private Identifier identifier;
 
@@ -121,7 +121,7 @@ public class Server {
 		this.playerManager = new PlayerManager(this);
 		this.worldManager = new WorldManager(this);
 		this.identifier = new ServerIdentifier(this);
-		network = new Network(this);
+		network = new NetworkLayer(this, 7);
 		this.guid = network.getRakNetServer().getGlobalUniqueId();
 		getLogger().info("The server has started successfully!");
 		this.tickProcessor();

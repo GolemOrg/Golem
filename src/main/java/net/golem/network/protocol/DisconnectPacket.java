@@ -1,11 +1,11 @@
 package net.golem.network.protocol;
 
 import net.golem.network.GamePacketIds;
+import net.golem.network.session.GameSessionAdapter;
 import net.golem.raknet.codec.PacketDecoder;
 import net.golem.raknet.codec.PacketEncoder;
-import net.golem.raknet.protocol.DataPacket;
 
-public class DisconnectPacket extends DataPacket {
+public class DisconnectPacket extends GamePacket {
 
 	public boolean hideDisconnectScreen = false;
 
@@ -25,5 +25,10 @@ public class DisconnectPacket extends DataPacket {
 	public void decode(PacketDecoder decoder) {
 		hideDisconnectScreen = decoder.readBoolean();
 		kickMessage = decoder.readString();
+	}
+
+	@Override
+	public boolean handle(GameSessionAdapter adapter) {
+		return adapter.handle(this);
 	}
 }

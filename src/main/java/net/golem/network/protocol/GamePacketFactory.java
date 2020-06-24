@@ -7,6 +7,7 @@ import net.golem.raknet.protocol.DataPacket;
 import net.golem.raknet.codec.PacketDecoder;
 import net.golem.raknet.protocol.RawPacket;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedHashMap;
 
 @Log4j2
@@ -20,11 +21,11 @@ public class GamePacketFactory {
 			int packetId = decoder.readUnsignedVarInt();
 			Class<? extends DataPacket> packetClass = packets.get(packetId);
 			if(packetClass != null) {
-				DataPacket packet = packetClass.newInstance();
+				DataPacket packet = packetClass.getConstructor().newInstance();
 				packet.decode(decoder);
 				return packet;
 			}
-		} catch (InstantiationException | IllegalAccessException e) {
+		} catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
 			e.printStackTrace();
 		}
 		return null;
@@ -42,5 +43,6 @@ public class GamePacketFactory {
 
 	public static void register() {
 		packets.put(GamePacketIds.LOGIN_PACKET, LoginPacket.class);
+		packets.put(GamePacketIds.DISCONNECT_PACKET, DisconnectPacket.class);
 	}
 }

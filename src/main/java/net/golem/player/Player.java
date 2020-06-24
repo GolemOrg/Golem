@@ -1,43 +1,37 @@
 package net.golem.player;
 
-import net.golem.network.GameSession;
+import lombok.ToString;
+import net.golem.entity.human.Human;
+import net.golem.network.session.GameSessionAdapter;
 
-import java.util.UUID;
+@ToString
+public class Player extends Human {
 
-public class Player {
 
-	private String username, displayName;
+	private GameSessionAdapter sessionAdapter;
 
-	private GameSession session;
+	private PlayerInfo info;
 
-	private UUID uuid;
+	private String displayName = "";
 
 	private boolean connected, loggedIn = false;
 
-	public Player(String username, GameSession session, UUID uuid) {
-		this.username = username;
-		this.session = session;
-		this.uuid = uuid;
+	public Player(GameSessionAdapter sessionAdapter, PlayerInfo info) {
+		this.sessionAdapter = sessionAdapter;
+		this.info = info;
+		displayName = info.getUsername();
 	}
 
-	public String getName() {
-		return username;
+	public PlayerInfo getInfo() {
+		return info;
 	}
 
 	public String getDisplayName() {
 		return displayName;
 	}
 
-	public void setDisplayName(String displayName) {
-		this.displayName = displayName;
-	}
-
-	public GameSession getSession() {
-		return session;
-	}
-
-	public UUID getUUID() {
-		return uuid;
+	public GameSessionAdapter getSessionAdapter() {
+		return sessionAdapter;
 	}
 
 	public boolean isConnected() {
@@ -58,5 +52,15 @@ public class Player {
 
 	public boolean isOnline() {
 		return this.isConnected() && this.isLoggedIn();
+	}
+
+	public void close(String message, String reason, boolean notify) {
+		if(isConnected() && !isClosed()) {
+			if(notify) {
+				sessionAdapter.disconnect(message, reason.length() > 0 ? reason : "closing");
+			} else {
+				sessionAdapter.close(reason);
+			}
+		}
 	}
 }

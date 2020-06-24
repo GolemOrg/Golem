@@ -1,35 +1,29 @@
 package net.golem.network.protocol;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 import lombok.extern.log4j.Log4j2;
 import net.golem.network.GamePacketIds;
-import net.golem.raknet.protocol.DataPacket;
+import net.golem.network.session.GameSessionAdapter;
 import net.golem.raknet.codec.PacketDecoder;
 import net.golem.raknet.codec.PacketEncoder;
 
-@Log4j2
-public class LoginPacket extends DataPacket {
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 
-	public String username;
+@Log4j2
+public class LoginPacket extends GamePacket {
 
 	public int protocol;
 
-	public String clientUUID;
-
-	public int clientId;
-
+	public String username;
 	public String xuid;
+	public UUID clientUUID;
 
-	public String identityPublicKey;
+	public JsonObject extraData;
 
-	public String serverAddress;
-
-	public String locale;
-
-	public String[][] chainData;
-
-	public String clientDataJwt;
-
-	public Object[] clientData;
+	public JsonObject clientData;
 
 	public boolean skipVerification = false;
 
@@ -44,8 +38,47 @@ public class LoginPacket extends DataPacket {
 
 	@Override
 	public void decode(PacketDecoder decoder) {
-		log.info("Received login packet");
 		protocol = decoder.readInt();
-		log.info("Protocol version: {}", protocol);
+		PacketDecoder loginDecoder = new PacketDecoder(decoder.readSlice(decoder.readUnsignedVarInt()));
+		decodeChainData(loginDecoder);
+		decodeClientData(loginDecoder);
+	}
+
+	private void decodeChainData(PacketDecoder loginDecoder) {
+		String data = loginDecoder.readSlice(loginDecoder.readIntLE()).toString(StandardCharsets.UTF_8);
+		Map<String, List<String>> map = new Gson().fromJson(data, new TypeToken<Map<String, List<String>>>(){}.getType());
+		if(map.isEmpty() || !map.containsKey("chain") || map.get("chain").isEmpty()) return;
+		List<String> chains = map.get("chain");
+		chains.forEach(chainToken -> {
+			JsonObject chain = decodeToken(chainToken);
+			if(chain == null || !chain.has("extraData")) {
+				// TODO: Handle other chains
+				return;
+			}
+			extraData = chain.get("extraData").getAsJsonObject();
+			username = extraData.get("displayName").getAsString();
+			clientUUID = UUID.fromString(extraData.get("identity").getAsString());
+			xuid = extraData.get("XUID").getAsString();
+		});
+	}
+
+	private void decodeClientData(PacketDecoder loginDecoder) {
+		clientData = decodeToken(loginDecoder.readSlice(loginDecoder.readIntLE()).toString(StandardCharsets.UTF_8));
+	}
+
+	private JsonObject decodeToken(String token) {
+		String[] base = token.split("\\.");
+		if (base.length < 2) return null;
+		return new Gson().fromJson(new String(Base64.getDecoder().decode(base[1]), StandardCharsets.UTF_8), JsonObject.class);
+	}
+
+	@Override
+	public boolean handle(GameSessionAdapter adapter) {
+		try {
+			return adapter.handle(this);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 }

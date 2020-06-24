@@ -74,7 +74,7 @@ public class GameSessionAdapter {
 		this.player = player;
 		//TODO: Implement pack support
 		sendPacket(new ResourcePacksInfoPacket());
-		log.info("Sending ResourcePacksInfoPacket");
+		sendPacket(new ResourcePackStackPacket());
 		return true;
 	}
 
@@ -83,7 +83,6 @@ public class GameSessionAdapter {
 	}
 
 	public boolean handle(ResourcePackClientResponsePacket packet) {
-		log.info("Received ResourcePackClientResponsePacket: {}", packet);
 		switch(packet.status) {
 			case REFUSED:
 				this.disconnect("You must accept resource packs to join this server.", "refused to accept the resource packs");
@@ -92,8 +91,7 @@ public class GameSessionAdapter {
 				//TODO: Pack support :)
 				break;
 			case HAVE_ALL_PACKS:
-				ResourcePackStackPacket resourcePackStackPacket = new ResourcePackStackPacket();
-				sendPacket(resourcePackStackPacket);
+				// todo: pack support :)
 				break;
 			case COMPLETED:
 				StartGamePacket startGamePacket = new StartGamePacket();

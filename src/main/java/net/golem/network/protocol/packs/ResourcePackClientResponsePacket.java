@@ -1,6 +1,7 @@
 package net.golem.network.protocol.packs;
 
 import lombok.ToString;
+import net.golem.network.GamePacketIds;
 import net.golem.network.protocol.GamePacket;
 import net.golem.network.session.GameSessionAdapter;
 import net.golem.network.types.ResourcePackStatus;
@@ -16,8 +17,8 @@ public class ResourcePackClientResponsePacket extends GamePacket {
 
 	public ArrayList<String> packIds = new ArrayList<>();
 
-	public ResourcePackClientResponsePacket(int packetId) {
-		super(packetId);
+	public ResourcePackClientResponsePacket() {
+		super(GamePacketIds.RESOURCE_PACKS_RESPONSE_PACKET);
 	}
 
 	@Override

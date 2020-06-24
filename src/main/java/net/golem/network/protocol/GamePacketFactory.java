@@ -3,6 +3,7 @@ package net.golem.network.protocol;
 import io.netty.buffer.ByteBuf;
 import lombok.extern.log4j.Log4j2;
 import net.golem.network.GamePacketIds;
+import net.golem.network.protocol.packs.ResourcePackClientResponsePacket;
 import net.golem.raknet.protocol.DataPacket;
 import net.golem.raknet.codec.PacketDecoder;
 import net.golem.raknet.protocol.RawPacket;
@@ -43,6 +44,6 @@ public class GamePacketFactory {
 
 	public static void register() {
 		packets.put(GamePacketIds.LOGIN_PACKET, LoginPacket.class);
-		packets.put(GamePacketIds.DISCONNECT_PACKET, DisconnectPacket.class);
+		packets.put(GamePacketIds.RESOURCE_PACKS_RESPONSE_PACKET, ResourcePackClientResponsePacket.class);
 	}
 }

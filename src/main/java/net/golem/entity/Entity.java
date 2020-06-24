@@ -8,6 +8,10 @@ public class Entity extends Location {
 
 	public boolean closed = false;
 
+	public int getId() {
+		return id;
+	}
+
 	public boolean isClosed() {
 		return closed;
 	}

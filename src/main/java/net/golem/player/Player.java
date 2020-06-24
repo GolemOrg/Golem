@@ -3,12 +3,15 @@ package net.golem.player;
 import lombok.ToString;
 import net.golem.entity.human.Human;
 import net.golem.network.session.GameSessionAdapter;
+import net.golem.types.GameMode;
 
 @ToString
 public class Player extends Human {
 
 
 	private GameSessionAdapter sessionAdapter;
+
+	private GameMode gameMode = GameMode.SURVIVAL;
 
 	private PlayerInfo info;
 
@@ -22,6 +25,18 @@ public class Player extends Human {
 		displayName = info.getUsername();
 	}
 
+	public GameSessionAdapter getSessionAdapter() {
+		return sessionAdapter;
+	}
+
+	public GameMode getGameMode() {
+		return gameMode;
+	}
+
+	public void setGameMode(GameMode gameMode) {
+		this.gameMode = gameMode;
+	}
+
 	public PlayerInfo getInfo() {
 		return info;
 	}
@@ -30,9 +45,6 @@ public class Player extends Human {
 		return displayName;
 	}
 
-	public GameSessionAdapter getSessionAdapter() {
-		return sessionAdapter;
-	}
 
 	public boolean isConnected() {
 		return connected;

@@ -3,10 +3,7 @@ package net.golem.network.session;
 import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
 import net.golem.Server;
-import net.golem.network.protocol.DisconnectPacket;
-import net.golem.network.protocol.GamePacket;
-import net.golem.network.protocol.LoginPacket;
-import net.golem.network.protocol.PlayStatusPacket;
+import net.golem.network.protocol.*;
 import net.golem.network.protocol.packs.ResourcePackClientResponsePacket;
 import net.golem.network.protocol.packs.ResourcePackStackPacket;
 import net.golem.network.protocol.packs.ResourcePacksInfoPacket;
@@ -77,6 +74,7 @@ public class GameSessionAdapter {
 		this.player = player;
 		//TODO: Implement pack support
 		sendPacket(new ResourcePacksInfoPacket());
+		log.info("Sending ResourcePacksInfoPacket");
 		return true;
 	}
 
@@ -85,6 +83,7 @@ public class GameSessionAdapter {
 	}
 
 	public boolean handle(ResourcePackClientResponsePacket packet) {
+		log.info("Received ResourcePackClientResponsePacket: {}", packet);
 		switch(packet.status) {
 			case REFUSED:
 				this.disconnect("You must accept resource packs to join this server.", "refused to accept the resource packs");
@@ -93,11 +92,15 @@ public class GameSessionAdapter {
 				//TODO: Pack support :)
 				break;
 			case HAVE_ALL_PACKS:
-				ResourcePackStackPacket pk = new ResourcePackStackPacket();
-				sendPacket(pk);
+				ResourcePackStackPacket resourcePackStackPacket = new ResourcePackStackPacket();
+				sendPacket(resourcePackStackPacket);
 				break;
 			case COMPLETED:
-
+				StartGamePacket startGamePacket = new StartGamePacket();
+				startGamePacket.entityRuntimeId = player.getId();
+				startGamePacket.entityUniqueId = player.getId();
+				startGamePacket.gamemode = player.getGameMode();
+				sendPacket(startGamePacket);
 				break;
 			default:
 				return false;

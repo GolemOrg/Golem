@@ -1,5 +1,6 @@
 package net.golem.network.protocol.packs;
 
+import lombok.ToString;
 import net.golem.network.protocol.GamePacket;
 import net.golem.network.session.GameSessionAdapter;
 import net.golem.network.types.ResourcePackStatus;
@@ -8,6 +9,7 @@ import net.golem.raknet.codec.PacketEncoder;
 
 import java.util.ArrayList;
 
+@ToString
 public class ResourcePackClientResponsePacket extends GamePacket {
 
 	public ResourcePackStatus status;

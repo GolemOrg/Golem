@@ -29,6 +29,12 @@ public class StartGamePacket extends GamePacket {
 
 	public PlayerPermission defaultPlayerPermission = PlayerPermission.MEMBER;
 
+	public int worldWidth = 0;
+	public int worldDepth = 0;
+
+	public boolean newNether = false;
+	public boolean forceExperimentalGameplay = false;
+
 	public int chunkTickRadius = 4;
 
 	public ArrayList<GameRule> gameRules = new ArrayList<>();
@@ -36,6 +42,9 @@ public class StartGamePacket extends GamePacket {
 	public int enchantmentSeed = 0;
 
 	public String multiplayerCorrelationId = "";
+
+	public boolean serverAuthoritativeMovement = false;
+	public boolean serverAuthoritativeInventory = true;
 
 	public StartGamePacket() {
 		super(GamePacketIds.START_GAME_PACKET);
@@ -79,17 +88,29 @@ public class StartGamePacket extends GamePacket {
 
 		encoder.writeString(Server.NETWORK_VERSION); // vanilla version
 
+		encoder.writeIntLE(worldWidth);
+		encoder.writeIntLE(worldDepth);
+
+		encoder.writeBoolean(newNether);
+		encoder.writeBoolean(forceExperimentalGameplay);
+
 		encoder.writeString(settings.getName()); // level id
 		encoder.writeString(settings.getName()); // world name
 		encoder.writeString(""); // premium world template id
 
 		encoder.writeBoolean(false); // is trial
-		encoder.writeBoolean(true); // is movement server authoritative
+		encoder.writeBoolean(serverAuthoritativeMovement); // is movement server authoritative
 		encoder.writeLongLE(settings.getCurrentTick()); // only used if trial mode is enabled
 
 		encoder.writeUnsignedVarInt(enchantmentSeed);
 
+		// write blocks
+		encoder.writeString("");
+		// write items
+		encoder.writeString("");
+
 		encoder.writeString(multiplayerCorrelationId);
+		encoder.writeBoolean(serverAuthoritativeInventory);
 	}
 
 	@Override

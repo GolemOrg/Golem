@@ -1,15 +1,16 @@
 package net.golem.network.protocol.packs;
 
+import lombok.ToString;
 import net.golem.network.GamePacketIds;
 import net.golem.network.protocol.GamePacket;
 import net.golem.network.session.GameSessionAdapter;
 import net.golem.packs.ResourcePack;
 import net.golem.raknet.codec.PacketDecoder;
 import net.golem.raknet.codec.PacketEncoder;
-import net.golem.raknet.protocol.DataPacket;
 
 import java.util.ArrayList;
 
+@ToString
 public class ResourcePacksInfoPacket extends GamePacket {
 
 	public boolean forced = false;
@@ -26,6 +27,7 @@ public class ResourcePacksInfoPacket extends GamePacket {
 	public void encode(PacketEncoder encoder) {
 		encoder.writeBoolean(forced);
 		encoder.writeBoolean(scriptingEnabled);
+
 		encoder.writeShortLE((short) behaviorPacks.size());
 		behaviorPacks.forEach(behaviorPack -> encodePack(encoder, behaviorPack));
 		encoder.writeShortLE((short) resourcePacks.size());

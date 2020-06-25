@@ -1,5 +1,6 @@
 package net.golem.network.protocol;
 
+import lombok.ToString;
 import net.golem.Server;
 import net.golem.math.Vector2f;
 import net.golem.math.Vector3f;
@@ -15,6 +16,7 @@ import net.golem.world.WorldSettings;
 
 import java.util.ArrayList;
 
+@ToString
 public class StartGamePacket extends GamePacket {
 
 	public long entityUniqueId;

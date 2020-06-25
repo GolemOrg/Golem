@@ -1,4 +1,4 @@
-package net.golem.terminal;
+package net.golem.terminal.types;
 
 public enum TextColor {
 

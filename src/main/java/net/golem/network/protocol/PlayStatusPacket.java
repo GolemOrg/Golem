@@ -1,11 +1,13 @@
 package net.golem.network.protocol;
 
+import lombok.ToString;
 import net.golem.network.GamePacketIds;
 import net.golem.network.session.GameSessionAdapter;
 import net.golem.network.types.PlayStatus;
 import net.golem.raknet.codec.PacketDecoder;
 import net.golem.raknet.codec.PacketEncoder;
 
+@ToString
 public class PlayStatusPacket extends GamePacket {
 
 	public PlayStatus status;

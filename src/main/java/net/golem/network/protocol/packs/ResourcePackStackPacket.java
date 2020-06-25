@@ -1,5 +1,7 @@
 package net.golem.network.protocol.packs;
 
+import lombok.ToString;
+import lombok.extern.log4j.Log4j2;
 import net.golem.Server;
 import net.golem.network.GamePacketIds;
 import net.golem.network.protocol.GamePacket;
@@ -10,15 +12,17 @@ import net.golem.raknet.codec.PacketEncoder;
 
 import java.util.ArrayList;
 
+@Log4j2
+@ToString
 public class ResourcePackStackPacket extends GamePacket {
 
 	public boolean forced = false;
 
-	public boolean isExperimental = false;
-	public String baseGameVersion = Server.NETWORK_VERSION;
-
 	public ArrayList<ResourcePack> resourcePacks = new ArrayList<>();
 	public ArrayList<ResourcePack> behaviorPacks = new ArrayList<>();
+
+	public boolean isExperimental = false;
+	public String baseGameVersion = Server.NETWORK_VERSION;
 
 
 	public ResourcePackStackPacket() {
@@ -28,10 +32,10 @@ public class ResourcePackStackPacket extends GamePacket {
 	@Override
 	public void encode(PacketEncoder encoder) {
 		encoder.writeBoolean(forced);
-		encoder.writeUnsignedVarInt(resourcePacks.size());
-		resourcePacks.forEach(resourcePack -> encodePack(encoder, resourcePack));
 		encoder.writeUnsignedVarInt(behaviorPacks.size());
 		behaviorPacks.forEach(behaviorPack -> encodePack(encoder, behaviorPack));
+		encoder.writeUnsignedVarInt(resourcePacks.size());
+		resourcePacks.forEach(resourcePack -> encodePack(encoder, resourcePack));
 		encoder.writeBoolean(isExperimental);
 		encoder.writeString(baseGameVersion);
 	}
@@ -49,6 +53,7 @@ public class ResourcePackStackPacket extends GamePacket {
 
 	@Override
 	public boolean handle(GameSessionAdapter adapter) {
-		return false;
+		return adapter.handle(this);
 	}
+
 }

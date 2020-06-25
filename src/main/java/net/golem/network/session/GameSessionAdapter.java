@@ -14,7 +14,7 @@ import net.golem.raknet.protocol.DataPacket;
 
 @Log4j2
 @ToString
-public class GameSessionAdapter {
+public class GameSessionAdapter implements PacketAdapter {
 
 	private Server server;
 
@@ -54,58 +54,83 @@ public class GameSessionAdapter {
 		session.sendPacket(packet, immediate);
 	}
 
-	public boolean handle(LoginPacket packet) throws Exception {
-		PlayStatusPacket pk = new PlayStatusPacket();
-		if(packet.protocol != Server.PROTOCOL_VERSION) {
-			pk.status = packet.protocol > Server.PROTOCOL_VERSION ? PlayStatus.FAILED_SERVER : PlayStatus.FAILED_CLIENT;
-		} else {
-			pk.status = PlayStatus.LOGIN_SUCCESS;
-		}
-		sendPacket(pk, true);
-		if(pk.status != PlayStatus.LOGIN_SUCCESS) {
-			session.close(String.format("incompatible protocol version (%s)", packet.protocol));
-			return true;
-		}
-		PlayerInfo info = new PlayerInfo(packet.username, packet.clientUUID);
-		Player player = server.getPlayerManager().createPlayer(this, info);
-		if(player == null) {
-			throw new Exception("An exception occurred while creating the player");
-		}
-		this.player = player;
-		//TODO: Implement pack support
-		sendPacket(new ResourcePacksInfoPacket());
-		sendPacket(new ResourcePackStackPacket());
-		return true;
-	}
-
-	public boolean handle(PlayStatusPacket packet) {
-		return true;
-	}
-
+	@Override
 	public boolean handle(ResourcePackClientResponsePacket packet) {
 		switch(packet.status) {
 			case REFUSED:
 				this.disconnect("You must accept resource packs to join this server.", "refused to accept the resource packs");
-				break;
+				return true;
 			case SEND_PACKS:
 				//TODO: Pack support :)
-				break;
+				return true;
 			case HAVE_ALL_PACKS:
-				// todo: pack support :)
-				break;
+				ResourcePackStackPacket resourcePackStackPacket = new ResourcePackStackPacket();
+				//TODO: Pack support :)
+				resourcePackStackPacket.forced = false;
+				sendPacket(resourcePackStackPacket);
+				return true;
 			case COMPLETED:
 				StartGamePacket startGamePacket = new StartGamePacket();
 				startGamePacket.entityRuntimeId = player.getId();
 				startGamePacket.entityUniqueId = player.getId();
 				startGamePacket.gamemode = player.getGameMode();
 				sendPacket(startGamePacket);
-				break;
-			default:
-				return false;
+				return true;
 		}
+		return false;
+	}
+
+	@Override
+	public boolean handle(ResourcePacksInfoPacket packet) {
 		return true;
 	}
 
+	@Override
+	public boolean handle(ResourcePackStackPacket packet) {
+		return true;
+	}
+
+	@Override
+	public boolean handle(DisconnectPacket packet) {
+		return true;
+	}
+
+	@Override
+	public boolean handle(LoginPacket packet) {
+		PlayStatusPacket pk = new PlayStatusPacket();
+		if(packet.protocol != Server.PROTOCOL_VERSION) {
+			pk.status = packet.protocol > Server.PROTOCOL_VERSION ? PlayStatus.FAILED_SERVER : PlayStatus.FAILED_CLIENT;
+			sendPacket(pk, true);
+			session.close(String.format("incompatible protocol version (%s)", packet.protocol));
+			return true;
+		}
+		pk.status = PlayStatus.LOGIN_SUCCESS;
+		sendPacket(pk);
+		PlayerInfo info = new PlayerInfo(packet.username, packet.clientUUID);
+		Player player = server.getPlayerManager().createPlayer(this, info);
+		if(player == null) {
+			log.error("An exception occurred while creating the player");
+
+			return true;
+		}
+		this.player = player;
+		//TODO: Implement pack support
+		ResourcePacksInfoPacket packsInfoPacket = new ResourcePacksInfoPacket();
+		sendPacket(packsInfoPacket);
+		return true;
+	}
+
+	@Override
+	public boolean handle(PlayStatusPacket packet) {
+		return true;
+	}
+
+	@Override
+	public boolean handle(StartGamePacket packet) {
+		return true;
+	}
+
+	@Override
 	public boolean handle(GamePacket packet) {
 		if(packet != null) {
 			if(!packet.handle(this)) {

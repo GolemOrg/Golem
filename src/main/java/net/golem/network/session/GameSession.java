@@ -8,6 +8,7 @@ import net.golem.raknet.enums.PacketReliability;
 import net.golem.raknet.protocol.DataPacket;
 import net.golem.raknet.RakNetServer;
 import net.golem.raknet.protocol.RawPacket;
+import net.golem.raknet.protocol.connected.DisconnectionNotificationPacket;
 import net.golem.raknet.session.RakNetSession;
 import net.golem.raknet.session.SessionManager;
 
@@ -17,13 +18,11 @@ import java.util.ArrayList;
 @Log4j2
 public class GameSession extends RakNetSession {
 
-	private Server server;
 
 	public GameSession(RakNetServer rakNetServer, SessionManager handler, ChannelHandlerContext context, InetSocketAddress address) {
 		super(rakNetServer, handler, context, address);
 		log.debug("Session created: [{}]", address);
-		server = Server.getInstance();
-		addListener(new GameSessionListener(server, this));
+		addListener(new GameSessionListener(Server.getInstance(), this));
 	}
 
 	@Override

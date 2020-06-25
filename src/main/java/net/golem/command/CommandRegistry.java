@@ -3,7 +3,7 @@ package net.golem.command;
 import net.golem.Server;
 import net.golem.command.defaults.HelpCommand;
 import net.golem.command.defaults.StopCommand;
-import net.golem.terminal.TextColor;
+import net.golem.terminal.types.TextColor;
 
 import java.util.ArrayList;
 import java.util.Arrays;

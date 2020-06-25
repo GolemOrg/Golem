@@ -1,11 +1,13 @@
 package net.golem.network.session;
 
+import lombok.extern.log4j.Log4j2;
 import net.golem.Server;
 import net.golem.network.protocol.GamePacket;
 import net.golem.raknet.protocol.DataPacket;
 import net.golem.raknet.protocol.RawPacket;
 import net.golem.raknet.session.SessionListener;
 
+@Log4j2
 public class GameSessionListener implements SessionListener {
 
 	private GameSession session;
@@ -29,12 +31,13 @@ public class GameSessionListener implements SessionListener {
 
 	@Override
 	public void onOpen() {
-
 	}
 
 	@Override
 	public void onClose() {
+		if(adapter.getPlayer() != null) {
+			adapter.getPlayer().getServer().getPlayerManager().removePlayer(adapter.getPlayer());
 
-
+		}
 	}
 }

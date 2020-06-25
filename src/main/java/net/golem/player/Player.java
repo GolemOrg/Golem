@@ -1,6 +1,7 @@
 package net.golem.player;
 
 import lombok.ToString;
+import net.golem.Server;
 import net.golem.entity.human.Human;
 import net.golem.network.session.GameSessionAdapter;
 import net.golem.types.GameMode;
@@ -8,6 +9,7 @@ import net.golem.types.GameMode;
 @ToString
 public class Player extends Human {
 
+	private Server server;
 
 	private GameSessionAdapter sessionAdapter;
 
@@ -20,9 +22,14 @@ public class Player extends Human {
 	private boolean connected, loggedIn = false;
 
 	public Player(GameSessionAdapter sessionAdapter, PlayerInfo info) {
+		this.server = Server.getInstance();
 		this.sessionAdapter = sessionAdapter;
 		this.info = info;
 		displayName = info.getUsername();
+	}
+
+	public Server getServer() {
+		return server;
 	}
 
 	public GameSessionAdapter getSessionAdapter() {

@@ -3,6 +3,7 @@ package net.golem.network.protocol;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
+import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
 import net.golem.network.GamePacketIds;
 import net.golem.network.session.GameSessionAdapter;
@@ -13,6 +14,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 @Log4j2
+@ToString(exclude = "clientData")
 public class LoginPacket extends GamePacket {
 
 	public int protocol;
@@ -24,8 +26,6 @@ public class LoginPacket extends GamePacket {
 	public JsonObject extraData;
 
 	public JsonObject clientData;
-
-	public boolean skipVerification = false;
 
 	public LoginPacket() {
 		super(GamePacketIds.LOGIN_PACKET);

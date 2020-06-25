@@ -10,6 +10,7 @@ import net.golem.network.ServerIdentifier;
 import net.golem.raknet.Identifier;
 import net.golem.player.PlayerManager;
 import net.golem.terminal.ServerConsole;
+import net.golem.terminal.types.EmojiType;
 import net.golem.world.WorldManager;
 import org.apache.logging.log4j.Logger;
 
@@ -112,7 +113,7 @@ public class Server {
 
 	private void start() {
 		getLogger().info("Starting server...");
-		this.configuration = new ServerConfiguration("Golem", "1.14.60", 100, "World", "Survival", false,19132);
+		this.configuration = new ServerConfiguration("Golem", Server.NETWORK_VERSION, 100, "World", "Survival", false, 19132);
 		// initiate the registries & factories
 		this.commandRegistry = new CommandRegistry(this);
 		this.blockFactory = new BlockFactory(this);
@@ -133,7 +134,7 @@ public class Server {
 
 	public void stop() {
 		getLogger().info("Shutting down server...");
-		this.setRunning(false);
+		setRunning(false);
 	}
 
 	public void shutdown() {
@@ -163,16 +164,16 @@ public class Server {
 	}
 
 	private void tickProcessor() {
-		this.nextTick = System.currentTimeMillis();
-		while(this.isRunning()) {
+		nextTick = System.currentTimeMillis();
+		while(isRunning()) {
 			try {
-				this.tick();
-				this.sleep();
+				tick();
+				sleep();
 			} catch (RuntimeException exception) {
 				exception.printStackTrace();
 			}
 		}
-		this.shutdown();
+		shutdown();
 	}
 
 }

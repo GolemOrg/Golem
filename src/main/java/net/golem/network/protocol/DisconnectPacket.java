@@ -1,10 +1,12 @@
 package net.golem.network.protocol;
 
+import lombok.ToString;
 import net.golem.network.GamePacketIds;
 import net.golem.network.session.GameSessionAdapter;
 import net.golem.raknet.codec.PacketDecoder;
 import net.golem.raknet.codec.PacketEncoder;
 
+@ToString
 public class DisconnectPacket extends GamePacket {
 
 	public boolean hideDisconnectScreen = false;

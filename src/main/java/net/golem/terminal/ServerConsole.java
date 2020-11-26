@@ -18,7 +18,7 @@ public class ServerConsole extends SimpleTerminalConsole {
 		this.thread.start();
 	}
 
-	public Server getServer() {
+    public Server getServer() {
 		return server;
 	}
 

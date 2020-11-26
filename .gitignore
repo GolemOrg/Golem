@@ -4,5 +4,6 @@ out
 target
 META-INF
 dependency-reduced-pom.xml
+*.iml
 .floo
 .flooignore

@@ -10,7 +10,6 @@ import net.golem.network.ServerIdentifier;
 import net.golem.raknet.Identifier;
 import net.golem.player.PlayerManager;
 import net.golem.terminal.ServerConsole;
-import net.golem.terminal.types.EmojiType;
 import net.golem.world.WorldManager;
 import org.apache.logging.log4j.Logger;
 
@@ -122,7 +121,7 @@ public class Server {
 		this.playerManager = new PlayerManager(this);
 		this.worldManager = new WorldManager(this);
 		this.identifier = new ServerIdentifier(this);
-		network = new NetworkLayer(this, 7);
+		this.network = new NetworkLayer(this, 7);
 		this.guid = network.getRakNetServer().getGlobalUniqueId();
 		getLogger().info("The server has started successfully!");
 		this.tickProcessor();

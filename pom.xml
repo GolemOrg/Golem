@@ -54,7 +54,7 @@
 		<dependency>
 			<groupId>net.golem</groupId>
 			<artifactId>raknet</artifactId>
-			<version>LATEST</version>
+			<version>0.2.7</version>
 		</dependency>
 	</dependencies>
 	<build>
